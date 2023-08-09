@@ -64,9 +64,9 @@ namespace KcopsAnalysis
                 PlayertimerDeclaration();
 
                 //ffMpeg 파일 검사 및 복사
-                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\ffprobe.exe"))
+                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\ffprobe.exe")|| !File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\ffmpeg.exe"))
                 {
-                    File.Copy(@"C:\ffmpeg-6.0\bin\ffmpeg.exe", AppDomain.CurrentDomain.BaseDirectory + @"\ffprobe.exe", true);
+                    File.Copy(@"C:\ffmpeg-6.0\bin\ffmpeg.exe", AppDomain.CurrentDomain.BaseDirectory + @"\ffmpeg.exe", true);
                     File.Copy(@"C:\ffmpeg-6.0\bin\ffprobe.exe", AppDomain.CurrentDomain.BaseDirectory + @"\ffprobe.exe", true);
                 }
                 dataGridView1.DataSource = table;
