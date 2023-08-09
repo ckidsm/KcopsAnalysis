@@ -14,8 +14,7 @@ namespace KcopsAnalysis
             leftBorderBtn = new Panel();
             leftBorderBtn.Size = new Size(7, 60);
             panelMenu.Controls.Add(leftBorderBtn);
-            //panelMenu.Con
-            //Form
+
             this.Text = string.Empty;
             this.ControlBox = false;
             this.DoubleBuffered = true;
@@ -141,7 +140,7 @@ namespace KcopsAnalysis
         {
             FormOpenVideo formOpenVideo = new FormOpenVideo();
             OpenChildForm(formOpenVideo);
-           // formOpenVideo.ShowDialog();
+            // formOpenVideo.ShowDialog();
 
         }
     }

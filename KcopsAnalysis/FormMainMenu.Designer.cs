@@ -56,7 +56,7 @@
             panelMenu.Dock = DockStyle.Left;
             panelMenu.Location = new Point(0, 0);
             panelMenu.Name = "panelMenu";
-            panelMenu.Size = new Size(144, 638);
+            panelMenu.Size = new Size(144, 1041);
             panelMenu.TabIndex = 0;
             // 
             // iconButton4
@@ -138,7 +138,7 @@
             panelTitleBar.Dock = DockStyle.Top;
             panelTitleBar.Location = new Point(144, 0);
             panelTitleBar.Name = "panelTitleBar";
-            panelTitleBar.Size = new Size(890, 56);
+            panelTitleBar.Size = new Size(1760, 56);
             panelTitleBar.TabIndex = 1;
             panelTitleBar.MouseDown += panelTitleBar_MouseDown;
             // 
@@ -151,7 +151,7 @@
             btnExit.IconColor = Color.Gainsboro;
             btnExit.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnExit.IconSize = 32;
-            btnExit.Location = new Point(802, 3);
+            btnExit.Location = new Point(1672, 3);
             btnExit.Name = "btnExit";
             btnExit.Size = new Size(75, 50);
             btnExit.TabIndex = 0;
@@ -167,7 +167,7 @@
             btnMaximize.IconColor = Color.Gainsboro;
             btnMaximize.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnMaximize.IconSize = 32;
-            btnMaximize.Location = new Point(713, 3);
+            btnMaximize.Location = new Point(1583, 3);
             btnMaximize.Name = "btnMaximize";
             btnMaximize.Size = new Size(75, 50);
             btnMaximize.TabIndex = 0;
@@ -184,7 +184,7 @@
             iconCurrentChildForm.IconFont = FontAwesome.Sharp.IconFont.Auto;
             iconCurrentChildForm.IconSize = 32;
             iconCurrentChildForm.ImageAlign = ContentAlignment.MiddleLeft;
-            iconCurrentChildForm.Location = new Point(3, 6);
+            iconCurrentChildForm.Location = new Point(873, 6);
             iconCurrentChildForm.Name = "iconCurrentChildForm";
             iconCurrentChildForm.Size = new Size(39, 50);
             iconCurrentChildForm.TabIndex = 0;
@@ -200,7 +200,7 @@
             btnMinimize.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnMinimize.IconSize = 32;
             btnMinimize.ImageAlign = ContentAlignment.BottomCenter;
-            btnMinimize.Location = new Point(626, 3);
+            btnMinimize.Location = new Point(1496, 3);
             btnMinimize.Name = "btnMinimize";
             btnMinimize.Size = new Size(75, 50);
             btnMinimize.TabIndex = 0;
@@ -214,14 +214,14 @@
             panelDesktop.Dock = DockStyle.Fill;
             panelDesktop.Location = new Point(144, 56);
             panelDesktop.Name = "panelDesktop";
-            panelDesktop.Size = new Size(890, 582);
+            panelDesktop.Size = new Size(1760, 985);
             panelDesktop.TabIndex = 2;
             // 
             // FormMainMenu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1034, 638);
+            ClientSize = new Size(1904, 1041);
             Controls.Add(panelDesktop);
             Controls.Add(panelTitleBar);
             Controls.Add(panelMenu);

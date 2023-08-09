@@ -8,11 +8,13 @@ namespace KcopsAnalysis
 {
     internal class VideoAnalysisCompletion
     {
-        public string? FileName { get; set; }
+        public string OutputFileName { get; set; }
 
-        public string? FilePath { get; set; }
+        public string OutputFilePath { get; set; }
+
+        public string OutputImage { get; set; }
 
         public int FileSize { get; set; }
-        public string? Description { get; set; }
+        public string Description { get; set; }
     }
 }
