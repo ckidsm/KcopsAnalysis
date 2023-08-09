@@ -141,9 +141,11 @@ namespace KcopsAnalysis
             // .net standard 7.0 에서 도구상자에 첨부된 vlcControl를 윈폼에 쓰면  VlcLibDirectory를 설정할 수 없다. 비활성화.
             //https://github.com/ZeBobo5/Vlc.DotNet/issues/693 게시된 이슈가 있어
             //https://github.com/ZeBobo5/Vlc.DotNet/wiki/Getting-started#vlcdotnetforms  여기에 기재된 방법을 사용.
+            //string libvlc = "C:\\SRC\\SynologyDrive\\62.Kcops\\WinForm\\KcopsAnalysis\\KcopsAnalysis\\bin\\Debug\\net7.0-windows\\";
+            //string path = Directory.GetCurrentDirectory();
             vlcControl = new Vlc.DotNet.Forms.VlcControl();
             vlcControl.BeginInit();
-            libDirectory = new DirectoryInfo(Path.Combine("C:\\SRC\\SynologyDrive\\62.Kcops\\WinForm\\KcopsAnalysis\\KcopsAnalysis\\bin\\Debug\\net7.0-windows\\", "libvlc", IntPtr.Size == 4 ? "x86" : "win-x64"));
+            libDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "libvlc", IntPtr.Size == 4 ? "x86" : "win-x64"));
             vlcControl.VlcLibDirectory = libDirectory;
             vlcControl.VlcMediaplayerOptions = new string[] { "--subsdec-encoding=cp949", "--freetype-font=Malgun Gothic" };
             vlcControl.EndInit();
