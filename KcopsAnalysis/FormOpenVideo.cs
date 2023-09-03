@@ -60,6 +60,10 @@ namespace KcopsAnalysis
 
         private bool isRunning = false;
 
+        public int a = 0;
+        public int c = 0;
+        public delegate void UpdateControlsDelegate(); //Execute when video loads
+
         public FormOpenVideo()
         {
             //파이썬 강제 종료
@@ -84,6 +88,9 @@ namespace KcopsAnalysis
                     File.Copy(@"C:\ffmpeg-6.0\bin\ffprobe.exe", AppDomain.CurrentDomain.BaseDirectory + @"\ffprobe.exe", true);
                 }
                 dataGridView1.DataSource = table;
+
+
+
             }
             catch (Exception ex)
             {
@@ -167,6 +174,9 @@ namespace KcopsAnalysis
             //테이블 패널 ADD
             LeftMainPanel.Controls.Add(vlcControl);
 
+            //this.vlcControl.PositionChanged += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPositionChangedEventArgs>(this.vlcControl_PositionChanged);
+            //vlcControl.Playing += new System.EventHandler<VlcMediaPlayerPlayingEventArgs>(SetProgresMax);
+
         }
         #endregion
 
@@ -190,7 +200,7 @@ namespace KcopsAnalysis
                 vlcControl.SetMedia(file);
                 vlcControl.Play();
                 isRunning = true;
-               // trackBar1.Value = vlcControl.TimeChanged;
+                // trackBar1.Value = vlcControl.TimeChanged;
                 table.Rows.Add(rowid.ToString(), sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
                 dataGridView1.DataSource = table;
                 dataGridView1.AutoResizeColumns();
@@ -201,8 +211,18 @@ namespace KcopsAnalysis
 
         private void vlcControl_PositionChanged(object sender, VlcMediaPlayerPositionChangedEventArgs e)
         {
-            // playPosition = e.NewPosition
+            // InvokeUpdateControls();
+         //   trackBar1.Value = (int)(e.NewPosition * 100);
 
+            //if (InvokeRequired)
+            //{
+            //    Invoke(new Action(() => { trackBar1.Value = (int)(e.NewPosition *100); }));
+            //}
+            //else
+            //{
+            //   // trackBar1.Value = (int)(e.NewPosition * 100);
+            //}
+            
         }
 
         #region 파일복사 메소드
@@ -244,9 +264,10 @@ namespace KcopsAnalysis
             Playertimer.Start();
             ButtonPlaying.IconChar = IconChar.Pushed;
             //https://github.com/ZeBobo5/Vlc.DotNet/issues/333
-#pragma warning disable CS8622 // 매개 변수 형식에서 참조 형식의 Null 허용 여부가 대상 대리자와 일치하지 않습니다(Null 허용 여부 특성 때문일 수 있음).
-            vlcControl.Playing += new EventHandler<VlcMediaPlayerPlayingEventArgs>(SetProgressMax);
-#pragma warning restore CS8622 // 매개 변수 형식에서 참조 형식의 Null 허용 여부가 대상 대리자와 일치하지 않습니다(Null 허용 여부 특성 때문일 수 있음).
+
+           // vlcControl.Playing += new EventHandler<VlcMediaPlayerPlayingEventArgs>(SetProgressMax);
+
+            //trackBar1.Maximum = (int)vlcControl.Length / 1000;
         }
         #endregion
 
@@ -775,8 +796,58 @@ namespace KcopsAnalysis
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
+           // vlcControl.Pause(); 
             vlcControl.Time = trackBar1.Value;
         }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            //vlcControl.Time = trackBar1.Value * 1000;
+            //int b = (int)vlcControl.Time / 1000;
+            //int d = b / 60;
+            //b = b - d * 60;
+            //lblPlayerTime.Text = d + ":" + b + "/" + c + ":" + a;
+
+        }
+
+        private void SetProgresMax(object sender, VlcMediaPlayerPlayingEventArgs e)
+        {
+            Invoke(new Action(() =>
+            {
+                trackBar1.Value = trackBar1.Minimum;
+                var vlc = (VlcControl)sender;
+                trackBar1.Maximum = (int)vlc.Length / 1000;
+                a = (int)vlc.Length / 1000; // Length (s)
+                c = a / 60; // Length (m)
+                a = a % 60; // Length (s)
+                lblPlayerTime.Text = 0 + "/" + c + ":" + a;
+            }));
+        }
+
+        //public void InvokeUpdateControls()
+        //{
+        //    if (this.InvokeRequired)
+
+
+        //    {
+        //        this.Invoke(new UpdateControlsDelegate(currentTrackTime));
+
+        //    }
+        //    else
+        //    {
+        //        currentTrackTime();
+        //    }
+        //}
+
+        //private void currentTrackTime()
+        //{
+        //    int b = (int)vlcControl.VlcMediaPlayer.Time / 1000;
+        //    int d = b / 60;
+        //    b = b - d * 60;
+        //    lblPlayerTime.Text = d + ":" + b + "/" + c + ":" + a; //min : sec / 
+        //    trackBar1.Value = b;
+        //}
+
     }
     #endregion
 }

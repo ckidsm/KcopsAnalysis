@@ -211,6 +211,7 @@ namespace KcopsAnalysis
             trackBar1.Name = "trackBar1";
             trackBar1.Size = new Size(367, 31);
             trackBar1.TabIndex = 2;
+            trackBar1.Scroll += trackBar1_Scroll;
             trackBar1.ValueChanged += trackBar1_ValueChanged;
             // 
             // LblFps
