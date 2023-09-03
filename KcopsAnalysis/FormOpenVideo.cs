@@ -190,7 +190,7 @@ namespace KcopsAnalysis
                 vlcControl.SetMedia(file);
                 vlcControl.Play();
                 isRunning = true;
-
+               // trackBar1.Value = vlcControl.TimeChanged;
                 table.Rows.Add(rowid.ToString(), sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
                 dataGridView1.DataSource = table;
                 dataGridView1.AutoResizeColumns();
