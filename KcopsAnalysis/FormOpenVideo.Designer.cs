@@ -44,6 +44,7 @@ namespace KcopsAnalysis
             LblFps = new Label();
             lblPlayerTime = new Label();
             groupBox1 = new GroupBox();
+            winChartViewer = new ChartDirector.WinChartViewer();
             MovieInfo = new GroupBox();
             dataGridView1 = new DataGridView();
             rightLayoutPanel = new TableLayoutPanel();
@@ -55,6 +56,8 @@ namespace KcopsAnalysis
             tableLayoutPanel3.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)winChartViewer).BeginInit();
             MovieInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             rightLayoutPanel.SuspendLayout();
@@ -85,9 +88,10 @@ namespace KcopsAnalysis
             // 
             // progressBar1
             // 
+            progressBar1.Dock = DockStyle.Fill;
             progressBar1.Location = new Point(3, 848);
             progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(431, 10);
+            progressBar1.Size = new Size(941, 10);
             progressBar1.TabIndex = 3;
             // 
             // lblStstus
@@ -207,6 +211,7 @@ namespace KcopsAnalysis
             trackBar1.Name = "trackBar1";
             trackBar1.Size = new Size(367, 31);
             trackBar1.TabIndex = 2;
+            trackBar1.ValueChanged += trackBar1_ValueChanged;
             // 
             // LblFps
             // 
@@ -236,6 +241,7 @@ namespace KcopsAnalysis
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(winChartViewer);
             groupBox1.Dock = DockStyle.Fill;
             groupBox1.Location = new Point(3, 486);
             groupBox1.Name = "groupBox1";
@@ -243,6 +249,15 @@ namespace KcopsAnalysis
             groupBox1.TabIndex = 2;
             groupBox1.TabStop = false;
             groupBox1.Text = "분석결과";
+            // 
+            // winChartViewer
+            // 
+            winChartViewer.Dock = DockStyle.Fill;
+            winChartViewer.Location = new Point(3, 28);
+            winChartViewer.Name = "winChartViewer";
+            winChartViewer.Size = new Size(935, 273);
+            winChartViewer.TabIndex = 0;
+            winChartViewer.TabStop = false;
             // 
             // MovieInfo
             // 
@@ -360,6 +375,7 @@ namespace KcopsAnalysis
             btnRePlay.Size = new Size(431, 132);
             btnRePlay.TabIndex = 5;
             btnRePlay.UseVisualStyleBackColor = false;
+            btnRePlay.Click += btnRePlay_Click;
             // 
             // FormOpenVideo
             // 
@@ -378,6 +394,8 @@ namespace KcopsAnalysis
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
+            groupBox1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)winChartViewer).EndInit();
             MovieInfo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             rightLayoutPanel.ResumeLayout(false);
@@ -406,5 +424,6 @@ namespace KcopsAnalysis
         private FontAwesome.Sharp.IconButton iconBtnAnalyze;
         private FontAwesome.Sharp.IconButton btnRePlay;
         private FontAwesome.Sharp.IconButton BtnExit;
+        private ChartDirector.WinChartViewer winChartViewer;
     }
 }

@@ -15,9 +15,16 @@ using Vlc.DotNet.Forms;
 using FontAwesome.Sharp;
 using Vlc.DotNet.Core;
 using System.Diagnostics;
+using ChartDirector;
+using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
+using System.Windows.Markup;
+using System.Reflection.Emit;
 
 namespace KcopsAnalysis
 {
+
     public partial class FormOpenVideo : Form
     {
         //로드된 파일경로 및 정보를 담기위한 테이블
@@ -45,6 +52,13 @@ namespace KcopsAnalysis
         //플레이어 디렉토리 정보
         private DirectoryInfo libDirectory;
 
+        //알고리즘 디렉토리 
+        private readonly string AlgorithmDirectory = @"C:\HitRun\Demo";
+
+        //파일 읽기 락
+        private object fileLock = new object();
+
+        private bool isRunning = false;
 
         public FormOpenVideo()
         {
@@ -64,7 +78,7 @@ namespace KcopsAnalysis
                 PlayertimerDeclaration();
 
                 //ffMpeg 파일 검사 및 복사
-                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\ffprobe.exe")|| !File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\ffmpeg.exe"))
+                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\ffprobe.exe") || !File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\ffmpeg.exe"))
                 {
                     File.Copy(@"C:\ffmpeg-6.0\bin\ffmpeg.exe", AppDomain.CurrentDomain.BaseDirectory + @"\ffmpeg.exe", true);
                     File.Copy(@"C:\ffmpeg-6.0\bin\ffprobe.exe", AppDomain.CurrentDomain.BaseDirectory + @"\ffprobe.exe", true);
@@ -171,8 +185,11 @@ namespace KcopsAnalysis
 
                 FfprobeFrameValue();
 
+                vlcControl.PositionChanged += vlcControl_PositionChanged;
+
                 vlcControl.SetMedia(file);
                 vlcControl.Play();
+                isRunning = true;
 
                 table.Rows.Add(rowid.ToString(), sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
                 dataGridView1.DataSource = table;
@@ -181,6 +198,12 @@ namespace KcopsAnalysis
             }
         }
         #endregion
+
+        private void vlcControl_PositionChanged(object sender, VlcMediaPlayerPositionChangedEventArgs e)
+        {
+            // playPosition = e.NewPosition
+
+        }
 
         #region 파일복사 메소드
         /// <summary>
@@ -307,9 +330,9 @@ namespace KcopsAnalysis
                                                                                                                                                                                                      // Console.WriteLine(PlayerHelpers.startInfo2.Arguments);
                                                                                                                                                                                                      //동영상 정보 프로퍼티 선언
                 PlayerHelpers.processn = Process.Start(PlayerHelpers.startInfo2);
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.processn.EnableRaisingEvents = true;
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.processn.WaitForExit(1);
 
                 string? result = PlayerHelpers.processn.StandardOutput.ReadLine(); //두번 찍히는 경우가 있어서 한 줄만 읽게 처리함.
@@ -321,24 +344,24 @@ namespace KcopsAnalysis
                 PlayerHelpers.Fpsfractionnotation = result;
 
                 string[] result2;
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 result2 = result.Split(new string[] { "/" }, StringSplitOptions.None);
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.Fps = Convert.ToDouble(result2[0]) / Convert.ToDouble(result2[1]);
                 PlayerHelpers.Fps.ToString("00.00");
 
                 //비디오 타임스케일 값
                 PlayerHelpers.startInfo2.Arguments = @"-v error -select_streams v:0 -show_entries stream=time_base -of default=noprint_wrappers=1:nokey=1 """ + sourceInfo.FileFullName + @"""";//-acodec
                 PlayerHelpers.processn = Process.Start(PlayerHelpers.startInfo2);
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.processn.EnableRaisingEvents = true;
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.processn.WaitForExit(1);
 
                 result = PlayerHelpers.processn.StandardOutput.ReadLine(); //두번 찍히는 경우가 있어서 한 줄만 읽게 처리함.
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 result = result.Replace("\r", "").Replace("\n", ""); //개행문자 \r \n 둘 다 지워야 정상 출력됨.
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
 
                 result2 = result.Split(new string[] { "/" }, StringSplitOptions.None);
                 PlayerHelpers.Timescale = result2[1]; //분수 뒷부분을 취함.
@@ -348,45 +371,45 @@ namespace KcopsAnalysis
                 //영상 마지막 시간 값
                 PlayerHelpers.startInfo2.Arguments = @"-v error -sexagesimal -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 """ + sourceInfo.FileFullName + @"""";//yy.MM.ss:mmmmmm
                 PlayerHelpers.processn = Process.Start(PlayerHelpers.startInfo2);
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.processn.EnableRaisingEvents = true;
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.processn.WaitForExit(1);
 
                 result = PlayerHelpers.processn.StandardOutput.ReadLine(); //두번 찍히는 경우가 있어서 한 줄만 읽게 처리함.
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 result = result.Replace("\r", "").Replace("\n", ""); //개행문자 \r \n 둘 다 지워야 정상 출력됨.
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.VideoEndTime = result;
 
                 //비디오 코덱 값
                 PlayerHelpers.startInfo2.Arguments = @"-v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 """ + sourceInfo.FileFullName + @"""";//-acodec
                 PlayerHelpers.processn = Process.Start(PlayerHelpers.startInfo2);
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.processn.EnableRaisingEvents = true;
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.processn.WaitForExit(1);
 
                 result = PlayerHelpers.processn.StandardOutput.ReadLine(); //두번 찍히는 경우가 있어서 한 줄만 읽게 처리함.
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 result = result.Replace("\r", "")
                     .Replace("\n", ""); //개행문자 \r \n 둘 다 지워야 정상 출력됨.
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 // textBox7.Text = result;
                 PlayerHelpers.VideoEndTime = result;
 
                 //오디오 코덱 값
                 PlayerHelpers.startInfo2.Arguments = @"-v error -select_streams a:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 """ + sourceInfo.FileFullName + @"""";//-acodec
                 PlayerHelpers.processn = Process.Start(PlayerHelpers.startInfo2);
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.processn.EnableRaisingEvents = true;
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.processn.WaitForExit(1);
 
                 result = PlayerHelpers.processn.StandardOutput.ReadLine(); //두번 찍히는 경우가 있어서 한 줄만 읽게 처리함.
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 result = result.Replace("\r", "").Replace("\n", ""); //개행문자 \r \n 둘 다 지워야 정상 출력됨.
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
                 PlayerHelpers.AudioCodec = result;
             }
             catch (Exception ex)
@@ -466,20 +489,27 @@ namespace KcopsAnalysis
         #region 영상 분석 클릭
         private void iconBtnAnalyze_Click(object sender, EventArgs e)
         {
+
+            if (!isRunning)
+            {
+                return;
+            }
+
             if (vlcControl.IsPlaying == true)
                 vlcControl.Stop();// Probably unnecessary
 
             outputinfo = new VideoAnalysisCompletion();
             ProcessRun.ProcessFindAndKill("python");
 
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
             string result_fileName = sourceInfo.FileFullName.Substring(sourceInfo.FileFullName.LastIndexOf("\\") + 1);
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+
             //pictureBox.Image = null;
             string ExtensionRemoveName = $"{System.IO.Path.GetFileNameWithoutExtension(result_fileName)}";
             outputinfo.OutputFileName = ExtensionRemoveName + "_output.avi";
-            outputinfo.OutputFilePath = sourceInfo.FilePath + @"\" + outputinfo.OutputFileName;
-            outputinfo.OutputImage = sourceInfo.FilePath + @"\" + ExtensionRemoveName + "_impulse.png";
+            outputinfo.OutputFilePath = AlgorithmDirectory + @"\" + @"SaveVideo\" + outputinfo.OutputFileName;
+            //20230901 충격수치결과값 텍스트파일로 변경
+            //  outputinfo.OutputImage = sourceInfo.FilePath + @"\" + ExtensionRemoveName + "_impulse.png";
+            outputinfo.OutputImage = AlgorithmDirectory + @"\SaveLog" + @"\" + ExtensionRemoveName + "_Accident.txt";
 
             if (File.Exists(outputinfo.OutputFilePath))
             {
@@ -496,7 +526,7 @@ namespace KcopsAnalysis
             //timer.Stop();
             //sw.Stop();
             //lblTime.text = "Completed in " + sw.Elapsed.Seconds.ToString() + "seconds";
-            StstusPrint("분석 완료 | 소요시간 :  " + stopwatch.Elapsed.Seconds.ToString() + "초");
+            StstusPrint("충격 시간 / 수치 추출  완료 | 소요시간 :  " + stopwatch.Elapsed.Seconds.ToString() + "초");
         }
         #endregion
 
@@ -548,14 +578,12 @@ namespace KcopsAnalysis
         #region ★ 프로세스 시작 및 작업 환경 지정
         private async void ProcessStartSet()
         {
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
             Psi.FileName = Process_name_Cmd;
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
-            Psi.WorkingDirectory = @"C:\SRC\SynologyDrive\62.Kcops\Demo";// "C:\\";
+            Psi.WorkingDirectory = @"C:\HitRun\Demo";// @"C:\Demo_0731";// "C:\\";
             //Psi.CreateNoWindow = false;
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
+
             Proc.StartInfo = Psi;
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
             Proc.Start();
 
             Proc.BeginOutputReadLine();
@@ -575,36 +603,131 @@ namespace KcopsAnalysis
             //https://learn.microsoft.com/ko-kr/dotnet/api/system.diagnostics.process.totalprocessortime?view=net-7.0
             try
             {
-                string AlgorithmArgumentsMode2 = "python demo_hit_n_run_tracking.py evaluate --video " + sourceInfo.FileFullName + " --mode 2 --conf_files .\\X_Decoder\\configs\\xdecoder\\svlp_focalt_lang.yaml --overrides WEIGHT .\\X_Decoder\\weight\\xdecoder_focalt_best_openseg.pt";
-#pragma warning disable CS8602 // null 가능 참조에 대한 역참조입니다.
-                Proc.StandardInput.Write(AlgorithmArgumentsMode2 + Environment.NewLine);
-#pragma warning restore CS8602 // null 가능 참조에 대한 역참조입니다.
+                CultureInfo ci = CultureInfo.InvariantCulture;
+                StringBuilder sb = new StringBuilder();
+                string AccidentValue = string.Empty;
+                double[] Impactquantity = new double[3];
+                string[] ImpactTime = new string[3];
+                // double[] data = { 0, 13, 0 };
+                Process[] Processspython = Process.GetProcessesByName("Python.exe");
+                // 20230901 TODO  충격량 0,실제 충격량 값,0
+                // 동영상 재생 시작시간 0. 감지한 시간, 끝 시간
+
+                // string AlgorithmArgumentsMode2 = "python demo_hit_n_run_tracking.py evaluate --video " + sourceInfo.FileFullName + " --mode 2 --conf_files .\\X_Decoder\\configs\\xdecoder\\svlp_focalt_lang.yaml --overrides WEIGHT .\\X_Decoder\\weight\\xdecoder_focalt_best_openseg.pt";
+                string AlgorithmArgumentsModeNew = "python optical_demo.py --video " + sourceInfo.FileFullName;
+
+                Proc.StandardInput.Write(AlgorithmArgumentsModeNew + Environment.NewLine);
+
                 Proc.StandardInput.Flush();
+
+                StstusPrint($" 명령어 전송 {AlgorithmArgumentsModeNew}");
+                //  await Task.Delay(10);
+                //파이썬이 실행중인지 확인 하자
+
+
+                //while ( Processspython.Length < 1 )
+                // {
+                //     StstusPrint($"{sourceInfo.FileFullName} : 파일영역 지정 대기 중:...");
+                // }
+
+                // StstusPrint($"{sourceInfo.FileFullName} : 영상 분석 시작:...");
 
                 stopwatch.Start();
                 while (!File.Exists(outputinfo.OutputImage))
                 {
-                    if (File.Exists(outputinfo.OutputImage))
-                    {
-                        FileInfo fi = new FileInfo(outputinfo.OutputImage);
-                        Debug.WriteLine($" 파일 생성 됨?! {fi.FullName}");
-
-                        await Task.Delay(1000);
-                        stopwatch.Stop(); //시간측정 끝
-
-                        Debug.WriteLine("time Total: " + stopwatch.ElapsedMilliseconds + "ms");
-                        //StstusPrint("time Total: " + stopwatch.ElapsedMilliseconds + "ms");
-                        StstusPrint($" 파일 생성 됨?! {fi.FullName}");
-                        // break;
-
-                    }
                     await Task.Delay(100);
                     Debug.WriteLine($" 파일 생성대기");
-                    StstusPrint("time Total: " + stopwatch.ElapsedMilliseconds + "ms");
+                    StstusPrint($"데이타 추출 대기중... 경과 시간: {stopwatch.ElapsedMilliseconds} ms");
                 }
 
 
-                await Task.Delay(1000);
+                if (File.Exists(outputinfo.OutputImage))
+                {
+                    FileInfo fi = new FileInfo(outputinfo.OutputImage);
+                    Debug.WriteLine($" 파일 생성 됨?! {fi.FullName}");
+
+                    await Task.Delay(100);
+                    stopwatch.Stop(); //시간측정 끝
+
+                    // StstusPrint($" {fi.FullName} {stopwatch.ElapsedMilliseconds} ms");
+                    // break;
+                    lock (fileLock)
+                    {
+                        AccidentValue = File.ReadAllText(outputinfo.OutputImage);
+
+                    }
+                    //텍스트파일에서 충격량 시간을 가져온다.
+                    var GraphReferenceValue = AccidentValue.Split('|');
+
+                    var num = GraphReferenceValue[0].ToString();
+                    // var OutputTIme_Data = String.Format("{0:yyyy-MM-dd HH:mm:dd}", GraphReferenceValue[0]);
+                    var OutputTIme_Data = System.String.Format("{0:hh:mm:ss.f}", GraphReferenceValue[0], ci);
+
+                    // 충격시간 그래프 구간
+                    ImpactTime[0] = ("0");
+                    ImpactTime[1] = (System.String.Format("{0:hh:mm:ss.f}", GraphReferenceValue[0], ci));
+                    ImpactTime[2] = PlayerHelpers.Timescale;
+
+                    //충격량 그래프 구간
+                    Impactquantity[0] = 0;
+                    Impactquantity[1] = Double.Parse(GraphReferenceValue[1]); //1.9197
+                    Impactquantity[2] = 0;
+
+                    // Create a XYChart object of size 600 x 400 pixels
+                    XYChart c = new XYChart(935, 300);
+
+                    // Set default text color to dark grey (0x333333)
+                    c.setColor(Chart.TextColor, 0x333333);
+
+                    // Add a title box using grey (0x555555) 24pt Arial Bold font
+                    // c.addTitle("분석결과", "Arial Bold", 18, 0x555555);
+
+                    // Set the plotarea at (70, 60) and of size 500 x 300 pixels, with transparent
+                    // background and border and light grey (0xcccccc) horizontal grid lines
+                    // c.setPlotArea(300, 60, 400, 400 ,Chart.Transparent, -1, Chart.Transparent, 0xcccccc);
+                    c.setPlotArea(300, 10, 400, 200, Chart.Transparent, -1, Chart.Transparent, 0xcccccc);
+
+                    // Set the x and y axis stems to transparent and the label font to 12pt Arial
+                    c.xAxis().setColors(Chart.Transparent);
+                    c.yAxis().setColors(Chart.Transparent);
+                    c.xAxis().setLabelStyle("Arial", 12);
+                    c.yAxis().setLabelStyle("Arial", 12);
+
+                    // 주어진 데이터를 사용하여 투명 테두리가 있는 파란색 막대 바
+                    c.addBarLayer(Impactquantity, 0x6699bb).setBorderColor(Chart.Transparent);
+
+                    //x 축 레이블 설정(충격시간)
+                    c.xAxis().setLabels(ImpactTime);
+
+                    //자동 y축 레이블의 경우 최소 간격을 40픽셀로 설정
+                    c.yAxis().setTickDensity(30);
+
+                    // Add a title to the y axis using dark grey (0x555555) 14pt Arial Bold font
+                    c.yAxis().setTitle("", "Arial Bold", 14, 0x555555);
+
+                    // Output the chart
+                    winChartViewer.Chart = c;
+
+                    //include tool tip for the chart 
+                    winChartViewer.ImageMap = c.getHTMLImageMap("clickable", "", "title='{xLabel}: {value} '");
+                }
+
+                stopwatch.Start();
+                while (!File.Exists(outputinfo.OutputFilePath))
+                {
+                    await Task.Delay(100);
+                    Debug.WriteLine($" 파일 생성대기");
+                    StstusPrint($"분석 결과 영상 생성중... 경과 시간: {stopwatch.ElapsedMilliseconds} ms");
+                }
+
+                if (File.Exists(outputinfo.OutputFilePath))
+                {
+                    stopwatch.Stop();
+                    vlcControl.SetMedia(outputinfo.OutputFilePath);
+                    vlcControl.Play();
+                }
+
+                await Task.Delay(100);
                 Proc.StandardInput.Close();
                 //Proc.WaitForExit();
                 return "종료";
@@ -615,6 +738,44 @@ namespace KcopsAnalysis
                 throw;
             }
 
+        }
+
+        private static string DisplayInSeconds(string inputsec)
+        {
+            int hours, minute, second;
+            int num = int.Parse(inputsec);
+            hours = num / 3600;//시 공식
+
+            minute = num % 3600 / 60;//분을 구하기위해서 입력되고 남은값에서 또 60을 나눈다.
+
+            second = num % 3600 % 60;//마지막 남은 시간에서 분을 뺀 나머지 시간을 초로 계산함
+            return $"{hours} 시간 {minute} 분 {second} 초";
+        }
+
+        public double TimeCodeValue(string timecode)
+        {
+            // 00:01:53,039
+            string[] parts = timecode.Replace(",", ":").Split(':', ',');
+            double Hours = int.Parse(parts[0]);
+            double Minutes = int.Parse(parts[1]);
+            double Seconds = int.Parse(parts[2]);
+            double Milliseconds = int.Parse(parts[3]);
+
+            return (Hours * 3600 + Minutes * 60 + Seconds) * 1000 + Milliseconds;
+        }
+
+
+
+
+        private void btnRePlay_Click(object sender, EventArgs e)
+        {
+            Form1 frm = new Form1();
+            frm.ShowDialog();
+        }
+
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            vlcControl.Time = trackBar1.Value;
         }
     }
     #endregion

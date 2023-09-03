@@ -12,6 +12,7 @@ namespace KcopsAnalysis
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Application.Run(new FormMainMenu());
+           // Application.Run(new FrmRealTimeDemo());
         }
     }
 }

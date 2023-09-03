@@ -133,7 +133,12 @@ namespace KcopsAnalysis
 
         private void iconButton3_Click(object sender, EventArgs e)
         {
+            //FrmRealTimeDemo frmrealTimeDemo = new FrmRealTimeDemo();
+            //frmrealTimeDemo.ShowDialog();
 
+            System.Windows.Forms.Form f = new FrmRealTimeDemo();
+            f.ShowDialog();
+            f.Dispose();
         }
 
         private void iconButton2_Click(object sender, EventArgs e)
