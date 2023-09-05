@@ -42,8 +42,8 @@ namespace KcopsAnalysis
         {
             dataRateTimer = new System.Windows.Forms.Timer();
             chartUpdateTimer = new System.Windows.Forms.Timer();
-            this.dataRateTimer.Tick += new System.EventHandler(this.dataRateTimer_Tick);
-            this.chartUpdateTimer.Tick += new System.EventHandler(this.chartUpdateTimer_Tick);
+            dataRateTimer.Tick += new EventHandler(dataRateTimer_Tick);
+           chartUpdateTimer.Tick += new System.EventHandler(chartUpdateTimer_Tick);
             // Data generation rate
             dataRateTimer.Interval = 250;
 

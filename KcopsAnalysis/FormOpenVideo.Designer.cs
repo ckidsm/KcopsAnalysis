@@ -325,6 +325,7 @@ namespace KcopsAnalysis
             BtnExit.Size = new Size(431, 136);
             BtnExit.TabIndex = 6;
             BtnExit.UseVisualStyleBackColor = false;
+            BtnExit.Click += BtnExit_Click;
             // 
             // iconBtnFileOpen
             // 

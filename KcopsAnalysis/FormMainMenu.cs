@@ -1,5 +1,9 @@
 using FontAwesome.Sharp;
+using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Xml.Linq;
 
 namespace KcopsAnalysis
 {
@@ -19,7 +23,8 @@ namespace KcopsAnalysis
             this.ControlBox = false;
             this.DoubleBuffered = true;
             this.MaximizedBounds = Screen.FromHandle(this.Handle).WorkingArea;
-        }
+            StartDebugging()
+;        }
 
         private struct RGBColors
         {
@@ -68,8 +73,6 @@ namespace KcopsAnalysis
                 currentBtn.ImageAlign = ContentAlignment.MiddleLeft;
             }
         }
-
-
 
         private void OpenChildForm(Form childForm)
         {
@@ -146,6 +149,22 @@ namespace KcopsAnalysis
             FormOpenVideo formOpenVideo = new FormOpenVideo();
             OpenChildForm(formOpenVideo);
             // formOpenVideo.ShowDialog();
+
+        }
+
+        private void StartDebugging()
+        {
+           
+            string ProjectName = "KcopsAnalysis"; // Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location); // Get File Title
+            string? AssemblyName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            TextWriter.LOG_PATH = string.Format("{0}\\LOGS\\{1}", ProjectName, AssemblyName);
+            TextWriter.LOG_FILE = AssemblyName + ".LOG";
+            // m_LogWriter.LOG_PATH_FILE = string.Format("{0}\\{1}_{2}.LOG", m_LogWriter.LOG_PATH, c, DateTime.Now.ToString("yyyy-MM-dd_hhmmss"));
+            // m_LogWriter.EnterDebug();
+            String traceMsg = string.Format("**** StartDebugging()::로그를 시작합니다.");
+            Trace.WriteLine(traceMsg);
+            TextWriter.LoggingToFile(ProjectName, traceMsg);
+
 
         }
     }

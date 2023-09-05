@@ -21,10 +21,11 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using System.Windows.Markup;
 using System.Reflection.Emit;
+using System.Windows.Interop;
+using Windows.ApplicationModel.UserDataTasks;
 
 namespace KcopsAnalysis
 {
-
     public partial class FormOpenVideo : Form
     {
         //로드된 파일경로 및 정보를 담기위한 테이블
@@ -89,13 +90,13 @@ namespace KcopsAnalysis
                 }
                 dataGridView1.DataSource = table;
 
-
+               
 
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show($"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
+                TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
             }
         }
         private void FormOpenVideo_Load(object sender, EventArgs e)
@@ -211,18 +212,8 @@ namespace KcopsAnalysis
 
         private void vlcControl_PositionChanged(object sender, VlcMediaPlayerPositionChangedEventArgs e)
         {
-            // InvokeUpdateControls();
-         //   trackBar1.Value = (int)(e.NewPosition * 100);
-
-            //if (InvokeRequired)
-            //{
-            //    Invoke(new Action(() => { trackBar1.Value = (int)(e.NewPosition *100); }));
-            //}
-            //else
-            //{
-            //   // trackBar1.Value = (int)(e.NewPosition * 100);
-            //}
             
+
         }
 
         #region 파일복사 메소드
@@ -265,7 +256,7 @@ namespace KcopsAnalysis
             ButtonPlaying.IconChar = IconChar.Pushed;
             //https://github.com/ZeBobo5/Vlc.DotNet/issues/333
 
-           // vlcControl.Playing += new EventHandler<VlcMediaPlayerPlayingEventArgs>(SetProgressMax);
+            // vlcControl.Playing += new EventHandler<VlcMediaPlayerPlayingEventArgs>(SetProgressMax);
 
             //trackBar1.Maximum = (int)vlcControl.Length / 1000;
         }
@@ -429,13 +420,24 @@ namespace KcopsAnalysis
 
                 result = PlayerHelpers.processn.StandardOutput.ReadLine(); //두번 찍히는 경우가 있어서 한 줄만 읽게 처리함.
 
-                result = result.Replace("\r", "").Replace("\n", ""); //개행문자 \r \n 둘 다 지워야 정상 출력됨.
+                if (null == result)
+                {
+                    result = "오디오 코덱 없음";
+                    PlayerHelpers.AudioCodec = result;
+                }
+                else
+                {
+                    result = result.Replace("\r", "").Replace("\n", ""); //개행문자 \r \n 둘 다 지워야 정상 출력됨.
 
-                PlayerHelpers.AudioCodec = result;
+                    PlayerHelpers.AudioCodec = result;
+                }
+
+             
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
                 throw;
             }
         }
@@ -453,16 +455,18 @@ namespace KcopsAnalysis
                     {
                         lblStstus.Text = msg;
                         lblStstus.Update();
-
+                        TextWriter.LoggingToFile(GetType().Name, msg);
                     }));
 
 
                 }
                 else { lblStstus.Text = msg; lblStstus.Update(); }
+                TextWriter.LoggingToFile(GetType().Name, msg);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message);
+                TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
                 throw;
             }
         }
@@ -501,6 +505,7 @@ namespace KcopsAnalysis
 
                     DateTime creationTime = File.GetCreationTime(sourceInfo.FileFullName);
                     DateTime lastWriteTime = File.GetLastWriteTime(sourceInfo.FileFullName);
+                    TextWriter.LoggingToFile(GetType().Name, $"파일 열기 클릭(영상로드) :: 위치:{sourceInfo.FileFullName}");
                 }
             }
             worker.RunWorkerAsync();
@@ -511,43 +516,61 @@ namespace KcopsAnalysis
         private void iconBtnAnalyze_Click(object sender, EventArgs e)
         {
 
-            if (!isRunning)
+            try
             {
-                return;
+
+                TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning}");
+                if (!isRunning)
+                {
+                    return;
+                }
+
+                if (vlcControl.IsPlaying == true)
+                    vlcControl.Stop();// Probably unnecessary
+                vlcControl.Invalidate();
+                TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} vlcControl.IsPlaying 상태 : {vlcControl.IsPlaying} ");
+                outputinfo = new VideoAnalysisCompletion();
+                ProcessRun.ProcessFindAndKill("python");
+
+                string result_fileName = sourceInfo.FileFullName.Substring(sourceInfo.FileFullName.LastIndexOf("\\") + 1);
+
+                //pictureBox.Image = null;
+                // string FileName = Path.GetFileName(sourceInfo.FileFullName);
+                string ExtensionRemoveName = $"{System.IO.Path.GetFileNameWithoutExtension(result_fileName)}";
+                outputinfo.OutputFileName = sourceInfo.FileName + "_0_output.avi";
+                outputinfo.OutputFilePath = AlgorithmDirectory + @"\" + @"SaveVideo\" + outputinfo.OutputFileName;
+                //20230901 충격수치결과값 텍스트파일로 변경
+                //  outputinfo.OutputImage = sourceInfo.FilePath + @"\" + ExtensionRemoveName + "_impulse.png";
+                TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} vlcControl.IsPlaying 상태 : {vlcControl.IsPlaying} :: 아웃풋 영상 파일명 지정 :{outputinfo.OutputFileName} :: 아웃풋 영상 경로 지정 {outputinfo.OutputFilePath} ");
+                outputinfo.OutputImage = AlgorithmDirectory + @"\SaveLog" + @"\" + ExtensionRemoveName + "_Accident.txt";
+                TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} :: 충격 수치 파일명 및  경로 {outputinfo.OutputImage} ");
+                if (File.Exists(outputinfo.OutputFilePath))
+                {
+                    File.Delete(outputinfo.OutputFilePath);
+                    TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} :: 아웃풋 영상 파일 삭제 {outputinfo.OutputFilePath} ");
+                }
+                if (File.Exists(outputinfo.OutputImage))
+                {
+                    File.Delete(outputinfo.OutputImage);
+                    TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} :: 충격 수치 파일 삭제 {outputinfo.OutputFilePath} ");
+                }
+                StstusPrint("영상 분석 시작");
+
+
+                ProcessStartEvent();
+                //timer.Stop();
+                //sw.Stop();
+                //lblTime.text = "Completed in " + sw.Elapsed.Seconds.ToString() + "seconds";
+                StstusPrint("충격 시간 / 수치 추출  완료 | 소요시간 :  " + stopwatch.Elapsed.Seconds.ToString() + "초");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
+                throw;
             }
 
-            if (vlcControl.IsPlaying == true)
-                vlcControl.Stop();// Probably unnecessary
-
-            outputinfo = new VideoAnalysisCompletion();
-            ProcessRun.ProcessFindAndKill("python");
-
-            string result_fileName = sourceInfo.FileFullName.Substring(sourceInfo.FileFullName.LastIndexOf("\\") + 1);
-
-            //pictureBox.Image = null;
-            string ExtensionRemoveName = $"{System.IO.Path.GetFileNameWithoutExtension(result_fileName)}";
-            outputinfo.OutputFileName = ExtensionRemoveName + "_output.avi";
-            outputinfo.OutputFilePath = AlgorithmDirectory + @"\" + @"SaveVideo\" + outputinfo.OutputFileName;
-            //20230901 충격수치결과값 텍스트파일로 변경
-            //  outputinfo.OutputImage = sourceInfo.FilePath + @"\" + ExtensionRemoveName + "_impulse.png";
-            outputinfo.OutputImage = AlgorithmDirectory + @"\SaveLog" + @"\" + ExtensionRemoveName + "_Accident.txt";
-
-            if (File.Exists(outputinfo.OutputFilePath))
-            {
-                File.Delete(outputinfo.OutputFilePath);
-            }
-            if (File.Exists(outputinfo.OutputImage))
-            {
-                File.Delete(outputinfo.OutputImage);
-            }
-            StstusPrint("영상 분석 시작");
-
-
-            ProcessStartEvent();
-            //timer.Stop();
-            //sw.Stop();
-            //lblTime.text = "Completed in " + sw.Elapsed.Seconds.ToString() + "seconds";
-            StstusPrint("충격 시간 / 수치 추출  완료 | 소요시간 :  " + stopwatch.Elapsed.Seconds.ToString() + "초");
+           
         }
         #endregion
 
@@ -570,8 +593,7 @@ namespace KcopsAnalysis
                 {
                     if (e.Data != null)
                     {
-                        Debug.WriteLine(e.Data);
-                        StstusPrint(e.Data);
+                        StstusPrint($"ProcessStartEvent :: ER-DataReceived = {e.Data}");
                     }
                 };
 
@@ -580,16 +602,16 @@ namespace KcopsAnalysis
                 {
                     if (e.Data != null)
                     {
-                        Debug.WriteLine("OutputDataReceived ::" + e.Data);
-                        StstusPrint(e.Data);
+                        StstusPrint($"\"ProcessStartEvent::OutputDataReceived = {e.Data}");
                     }
                 };
 
                 ProcessStartSet();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message);
+                TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
                 throw;
             }
         }
@@ -615,6 +637,20 @@ namespace KcopsAnalysis
             Proc.CancelOutputRead();
             Proc.CancelErrorRead();
             Proc.Close();
+
+            if (File.Exists(outputinfo.OutputFilePath))
+            {
+
+              //  vlcControl.ResetMedia
+                vlcControl.ResetMedia();
+                vlcControl.Refresh();
+               // vlcControl.SetMedia(outputinfo.OutputFilePath);
+                vlcControl.Play(outputinfo.OutputFilePath);
+
+
+
+
+            }
         }
         #endregion
 
@@ -629,8 +665,8 @@ namespace KcopsAnalysis
                 string AccidentValue = string.Empty;
                 double[] Impactquantity = new double[3];
                 string[] ImpactTime = new string[3];
-                // double[] data = { 0, 13, 0 };
                 Process[] Processspython = Process.GetProcessesByName("Python.exe");
+                string PassedValue=string.Empty;
                 // 20230901 TODO  충격량 0,실제 충격량 값,0
                 // 동영상 재생 시작시간 0. 감지한 시간, 끝 시간
 
@@ -656,17 +692,16 @@ namespace KcopsAnalysis
                 stopwatch.Start();
                 while (!File.Exists(outputinfo.OutputImage))
                 {
-                    await Task.Delay(100);
-                    Debug.WriteLine($" 파일 생성대기");
-                    StstusPrint($"데이타 추출 대기중... 경과 시간: {stopwatch.ElapsedMilliseconds} ms");
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    StstusPrint($"충격 시간/구간 추출 대기중... 경과 시간: {stopwatch.Elapsed}");
                 }
 
 
                 if (File.Exists(outputinfo.OutputImage))
                 {
-                    FileInfo fi = new FileInfo(outputinfo.OutputImage);
-                    Debug.WriteLine($" 파일 생성 됨?! {fi.FullName}");
-
+                   // FileInfo fi = new FileInfo(outputinfo.OutputImage);
+                    
+                    TextWriter.LoggingToFile(GetType().Name, $"ProcessStartAsync : 충격 수치 파일 생성 됨 ?!  : {outputinfo.OutputImage}");
                     await Task.Delay(100);
                     stopwatch.Stop(); //시간측정 끝
 
@@ -736,26 +771,37 @@ namespace KcopsAnalysis
                 stopwatch.Start();
                 while (!File.Exists(outputinfo.OutputFilePath))
                 {
-                    await Task.Delay(100);
-                    Debug.WriteLine($" 파일 생성대기");
-                    StstusPrint($"분석 결과 영상 생성중... 경과 시간: {stopwatch.ElapsedMilliseconds} ms");
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    //Debug.WriteLine($" 파일 생성대기");
+                    StstusPrint($"분석 결과 영상 생성중...{outputinfo.OutputFileName} || 경과 시간: {stopwatch.Elapsed} ");
                 }
 
                 if (File.Exists(outputinfo.OutputFilePath))
                 {
-                    stopwatch.Stop();
-                    vlcControl.SetMedia(outputinfo.OutputFilePath);
-                    vlcControl.Play();
+
+                    //stopwatch.Stop();
+                    //vlcControl.ResetMedia();
+
+                    //vlcControl.SetMedia(outputinfo.OutputFilePath);
+                    //vlcControl.BeginInit();
+                    //vlcControl.Play();
+
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    Proc.StandardInput.Close();
+                    //Proc.WaitForExit();
+                    PassedValue = "AVi파일 생성 완료";
+                    
                 }
 
-                await Task.Delay(100);
-                Proc.StandardInput.Close();
-                //Proc.WaitForExit();
-                return "종료";
+                //await Task.Delay(TimeSpan.FromSeconds(1));
+                //Proc.StandardInput.Close();
+                ////Proc.WaitForExit();
+                return PassedValue;
             }
-            catch (Exception)
+            catch (Exception ex )
             {
-
+                MessageBox.Show(ex.Message);
+                TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
                 throw;
             }
 
@@ -796,7 +842,7 @@ namespace KcopsAnalysis
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
-           // vlcControl.Pause(); 
+            // vlcControl.Pause(); 
             vlcControl.Time = trackBar1.Value;
         }
 
@@ -824,30 +870,21 @@ namespace KcopsAnalysis
             }));
         }
 
-        //public void InvokeUpdateControls()
-        //{
-        //    if (this.InvokeRequired)
-
-
-        //    {
-        //        this.Invoke(new UpdateControlsDelegate(currentTrackTime));
-
-        //    }
-        //    else
-        //    {
-        //        currentTrackTime();
-        //    }
-        //}
-
-        //private void currentTrackTime()
-        //{
-        //    int b = (int)vlcControl.VlcMediaPlayer.Time / 1000;
-        //    int d = b / 60;
-        //    b = b - d * 60;
-        //    lblPlayerTime.Text = d + ":" + b + "/" + c + ":" + a; //min : sec / 
-        //    trackBar1.Value = b;
-        //}
-
+        private void BtnExit_Click(object sender, EventArgs e)
+        {
+         //   vlcControl.OnPlaying();
+         ////   vlcControl.Update();    
+         //   vlcControl.ResetMedia();
+            vlcControl.Stop();
+            // vlcControl.Refresh();
+            // vlcControl.Update();
+            //  vlcControl.SetMedia("C:\\HitRun\\Demo\\SaveVideo\\demo1.mp4_0_output.avi");
+            
+            vlcControl.Video.IsKeyInputEnabled = true;
+           
+            vlcControl.Play("C:\\HitRun\\Demo\\SaveVideo\\demo1.mp4_0_output.avi");
+            vlcControl.ResetMedia();
+        }
     }
     #endregion
 }
