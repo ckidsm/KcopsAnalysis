@@ -558,9 +558,7 @@ namespace KcopsAnalysis
 
 
                 ProcessStartEvent();
-                //timer.Stop();
-                //sw.Stop();
-                //lblTime.text = "Completed in " + sw.Elapsed.Seconds.ToString() + "seconds";
+               
                 StstusPrint("충격 시간 / 수치 추출  완료 | 소요시간 :  " + stopwatch.Elapsed.Seconds.ToString() + "초");
             }
             catch (Exception ex)
