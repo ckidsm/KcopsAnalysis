@@ -206,7 +206,8 @@ namespace KcopsAnalysis
             //e.NewTime 현재 재싱 시간.
             Invoke(new Action(() =>
             {
-                lblPlayerTime.Text = TimeFormat((int)e.NewTime) + "  | " + TimeFormat((int)vlcControl.Length);
+                Player.VideoEndTime = TimeFormat((int)vlcControl.Length);
+                lblPlayerTime.Text = TimeFormat((int)e.NewTime) + "  | " + Player.VideoEndTime;
                 trackBar1.Maximum = (int)vlcControl.Length / 1000;
                 trackBar1.Value = (int)e.NewTime / 1000;
             }));
@@ -257,8 +258,8 @@ namespace KcopsAnalysis
                 if (sourceInfo.FileFullName is not null)
                 {
                     FileInfo file = new(sourceInfo.FileFullName);
-
-                    FfprobeFrameValue();
+//
+                   FfprobeFrameValue();
 
                     //  vlcControl.SetMedia(file);
                     isRunning = true;
@@ -268,8 +269,12 @@ namespace KcopsAnalysis
                     dataGridView1.AutoResizeColumns();
                     //  int nRowIndex = dataGridView1.Rows.Count - 1;
                     dataGridView1.Rows[dataGridView1.Rows.Count - 1].Selected = true;
+                    vlcControl.Invalidate();
+                  
                     vlcControl.Play(file);
                     trackBar1.Maximum = (int)vlcControl.Length;
+                    //PlayerHelpers.Timescale = TimeFormat((int)vlcControl.Length);
+                   
                     Videoplayback();
 
                 }
@@ -564,6 +569,13 @@ namespace KcopsAnalysis
         private void iconBtnFileOpen_Click(object sender, EventArgs e)
         {
             //https://stackoverflow.com/questions/24449988/how-to-get-file-path-from-openfiledialog-and-folderbrowserdialog
+
+            vlcControl.Invalidate();
+            if (vlcControl.IsPlaying)
+            {
+                vlcControl.Stop();
+            }
+
             sourceInfo = new VideoAnalysisSourceInfo();
             using (System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog())
             {
@@ -836,7 +848,7 @@ namespace KcopsAnalysis
                     // 충격시간 그래프 구간
                     ImpactTime[0] = ("0");
                     ImpactTime[1] = (System.String.Format("{0:hh:mm:ss.f}", GraphReferenceValue[0], ci));
-                    ImpactTime[2] = PlayerHelpers.Timescale;
+                    ImpactTime[2] = Player.VideoEndTime;
 
                     //충격량 그래프 구간
                     Impactquantity[0] = 0;
