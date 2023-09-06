@@ -30,10 +30,10 @@ namespace KcopsAnalysis
         public void LinecreateChart(WinChartViewer viewer, int chartIndex)
         {
             // The data for the line chart
-            double[] data = {0,0,10};
+            double[] data = { 0, 0, 10 };
 
             // The labels for the line chart
-            string[] labels = {"0", "13.328231" };
+            string[] labels = { "0", "13.328231" };
 
             // Create a XYChart object of size 250 x 250 pixels
             XYChart c = new XYChart(350, 350);
@@ -69,10 +69,10 @@ namespace KcopsAnalysis
         public void BarcreateChart(WinChartViewer viewer, int chartIndex)
         {
             // The data for the bar chart
-            double[] data = { 0,13,0 };
+            double[] data = { 0, 13, 0 };
 
             // The labels for the bar chart
-            string[] labels = {"0" , "0.0633","13.00" };
+            string[] labels = { "0", "0.0633", "13.00" };
 
             // Create a XYChart object of size 600 x 400 pixels
             XYChart c = new XYChart(500, 400);
@@ -112,6 +112,10 @@ namespace KcopsAnalysis
             viewer.ImageMap = c.getHTMLImageMap("clickable", "", "title='{xLabel}: {value} kg'");
         }
 
+        private void vlcControl1_Playing(object sender, Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs e)
+        {
+
+        }
     }
 }
 

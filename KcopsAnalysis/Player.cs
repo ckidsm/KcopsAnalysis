@@ -11,11 +11,11 @@ namespace KcopsAnalysis
     {
         public static double Fps = 00.00;
         //fps분수표기
-        public static string ?Fpsfractionnotation;
+        public static string Fpsfractionnotation;
         //타임스케일
-        public static string ?Timescale;
+        public static string Timescale;
         //영상마지막시간
-        public static string ?VideoEndTime;
+        public static string VideoEndTime;
         //시
         public static int Hour;
         //분
@@ -41,13 +41,13 @@ namespace KcopsAnalysis
         //키프레임 추출 실패
         public static bool KeyframeExtractionFailed;
         //하드웨어 가속 옵션
-        public static string ?HardwareAccelerationOptions;
+        public static string HardwareAccelerationOptions;
         //비디오 코덱 옵션
-        public static string? vcodecoptions;
+        public static string vcodecoptions;
         //종료값 미지정
         public static bool UnspecifiedExitValue;
         //자르기 종료시간명령어
-        public static string ?CropEndTimeCommand;
+        public static string  CropEndTimeCommand;
 
 
         public static ProcessStartInfo startInfo = new ProcessStartInfo(AppDomain.CurrentDomain.BaseDirectory + "\\ffmpeg.exe");

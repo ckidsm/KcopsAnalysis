@@ -23,6 +23,7 @@ using System.Windows.Markup;
 using System.Reflection.Emit;
 using System.Windows.Interop;
 using Windows.ApplicationModel.UserDataTasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace KcopsAnalysis
 {
@@ -35,6 +36,9 @@ namespace KcopsAnalysis
 
         //플레이어 재생 시간
         private readonly System.Windows.Forms.Timer Playertimer = new();
+
+        CancellationTokenSource cts = null;
+
         //불러온 파일정보
         private VideoAnalysisSourceInfo sourceInfo;
         //분석된 파일정보
@@ -42,8 +46,8 @@ namespace KcopsAnalysis
 
         // 프로세스관련 정의
         private static string Process_name_Cmd = "cmd.exe ";
-        private static ProcessStartInfo? Psi = null;
-        private static Process? Proc = null;
+        private static ProcessStartInfo Psi;
+        private static Process Proc;
         private static readonly bool IsRunning = false;
 
         //분석시작 측정 스톱워치
@@ -58,13 +62,16 @@ namespace KcopsAnalysis
 
         //파일 읽기 락
         private object fileLock = new object();
-
+        // 분석 중
         private bool isRunning = false;
-
+        // 에러 상태
+        private bool isError = false;
         public int a = 0;
         public int c = 0;
         public delegate void UpdateControlsDelegate(); //Execute when video loads
 
+        //프레임 이동단위
+        private int framemovementunit = 1;
         public FormOpenVideo()
         {
             //파이썬 강제 종료
@@ -90,7 +97,7 @@ namespace KcopsAnalysis
                 }
                 dataGridView1.DataSource = table;
 
-               
+
 
             }
             catch (Exception ex)
@@ -126,17 +133,16 @@ namespace KcopsAnalysis
                 WorkerReportsProgress = true,
                 WorkerSupportsCancellation = true
             };
-#pragma warning disable CS8622 // 매개 변수 형식에서 참조 형식의 Null 허용 여부가 대상 대리자와 일치하지 않습니다(Null 허용 여부 특성 때문일 수 있음).
+
             worker.DoWork += Worker_DoWork;
-#pragma warning restore CS8622 // 매개 변수 형식에서 참조 형식의 Null 허용 여부가 대상 대리자와 일치하지 않습니다(Null 허용 여부 특성 때문일 수 있음).
 
-#pragma warning disable CS8622 // 매개 변수 형식에서 참조 형식의 Null 허용 여부가 대상 대리자와 일치하지 않습니다(Null 허용 여부 특성 때문일 수 있음).
+
             worker.ProgressChanged += Worker_ProgressChanged;
-#pragma warning restore CS8622 // 매개 변수 형식에서 참조 형식의 Null 허용 여부가 대상 대리자와 일치하지 않습니다(Null 허용 여부 특성 때문일 수 있음).
 
-#pragma warning disable CS8622 // 매개 변수 형식에서 참조 형식의 Null 허용 여부가 대상 대리자와 일치하지 않습니다(Null 허용 여부 특성 때문일 수 있음).
+
+
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
-#pragma warning restore CS8622 // 매개 변수 형식에서 참조 형식의 Null 허용 여부가 대상 대리자와 일치하지 않습니다(Null 허용 여부 특성 때문일 수 있음).
+
         }
         #endregion
 
@@ -174,9 +180,35 @@ namespace KcopsAnalysis
             vlcControl.Dock = DockStyle.Fill;
             //테이블 패널 ADD
             LeftMainPanel.Controls.Add(vlcControl);
+            vlcControl.Playing += vlcControl1_Playing;
+            vlcControl.PositionChanged += vlcControl_PositionChanged;
 
             //this.vlcControl.PositionChanged += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPositionChangedEventArgs>(this.vlcControl_PositionChanged);
             //vlcControl.Playing += new System.EventHandler<VlcMediaPlayerPlayingEventArgs>(SetProgresMax);
+
+        }
+
+
+
+        private void vlcControl1_Playing(object sender, Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs e)
+        {
+
+
+            Invoke(new Action(() =>
+            {
+
+                //lblPlayerTime.Text = vlcControl.Time.ToString();
+                ////메소드에 넘겨주고
+                //PlayerHelpers.MillisecondHourMinuteSecond(vlcControl.Time);
+                ////계산된 값을 대입 및 형식변환
+
+                //lblPlayerTime.Text = $"{PlayerHelpers.Hour:00} : {PlayerHelpers.Minute:00} : {PlayerHelpers.Second:00}";
+                //DisplayFrameNumber();
+
+                //lblPlayerTime.Text = string.Format("{0:mm\\:ss}", TimeSpan.FromMilliseconds(vlcControl.Video.Tracks);
+            }));
+
+
 
         }
         #endregion
@@ -184,35 +216,44 @@ namespace KcopsAnalysis
         #region 불러운 영상 파일 정보 추출
         private void LoadMovie()
         {
-            var rowid = table.Rows.Count + 1;
-
-            vlcControl.Stop();
-            iconBtnAnalyze.Enabled = true;
-            lblStstus.Text = "선택된 영상 명 :" + sourceInfo.FileFullName;
-            if (sourceInfo.FileFullName is not null)
+            try
             {
+                var rowid = table.Rows.Count + 1;
 
-                FileInfo file = new(sourceInfo.FileFullName);
+                iconBtnAnalyze.Enabled = true;
+                lblStstus.Text = "선택된 영상 명 :" + sourceInfo.FileFullName;
+                if (sourceInfo.FileFullName is not null)
+                {
+                    FileInfo file = new(sourceInfo.FileFullName);
 
-                FfprobeFrameValue();
+                    FfprobeFrameValue();
 
-                vlcControl.PositionChanged += vlcControl_PositionChanged;
+                    //  vlcControl.SetMedia(file);
+                    isRunning = true;
+                    // trackBar1.Value = vlcControl.TimeChanged;
+                    table.Rows.Add(rowid.ToString(), sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
+                    dataGridView1.DataSource = table;
+                    dataGridView1.AutoResizeColumns();
+                    //  int nRowIndex = dataGridView1.Rows.Count - 1;
+                    dataGridView1.Rows[dataGridView1.Rows.Count - 1].Selected = true;
+                    vlcControl.Play(file);
 
-                vlcControl.SetMedia(file);
-                vlcControl.Play();
-                isRunning = true;
-                // trackBar1.Value = vlcControl.TimeChanged;
-                table.Rows.Add(rowid.ToString(), sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
-                dataGridView1.DataSource = table;
-                dataGridView1.AutoResizeColumns();
-                Videoplayback();
+                    Videoplayback();
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
+                TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
+                this.Close();
+            }
+
         }
         #endregion
 
         private void vlcControl_PositionChanged(object sender, VlcMediaPlayerPositionChangedEventArgs e)
         {
-            
+
 
         }
 
@@ -259,6 +300,7 @@ namespace KcopsAnalysis
             // vlcControl.Playing += new EventHandler<VlcMediaPlayerPlayingEventArgs>(SetProgressMax);
 
             //trackBar1.Maximum = (int)vlcControl.Length / 1000;
+            //   var trackvalue = vlcControl.Video.Tracks;
         }
         #endregion
 
@@ -306,6 +348,7 @@ namespace KcopsAnalysis
 
             lblPlayerTime.Text = $"{PlayerHelpers.Hour:00} : {PlayerHelpers.Minute:00} : {PlayerHelpers.Second:00}";
             DisplayFrameNumber();
+
         }
         #endregion
 
@@ -432,7 +475,7 @@ namespace KcopsAnalysis
                     PlayerHelpers.AudioCodec = result;
                 }
 
-             
+
             }
             catch (Exception ex)
             {
@@ -479,7 +522,7 @@ namespace KcopsAnalysis
             sourceInfo = new VideoAnalysisSourceInfo();
             using (System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog())
             {
-                vlcControl.Stop();
+
                 openFileDialog.InitialDirectory = "C:\\";
                 openFileDialog.Filter = Properties.Resources.Media_Files;
                 openFileDialog.FilterIndex = 2;
@@ -558,7 +601,7 @@ namespace KcopsAnalysis
 
 
                 ProcessStartEvent();
-               
+
                 StstusPrint("충격 시간 / 수치 추출  완료 | 소요시간 :  " + stopwatch.Elapsed.Seconds.ToString() + "초");
             }
             catch (Exception ex)
@@ -568,7 +611,7 @@ namespace KcopsAnalysis
                 throw;
             }
 
-           
+
         }
         #endregion
 
@@ -593,7 +636,33 @@ namespace KcopsAnalysis
                     {
                         StstusPrint($"ProcessStartEvent :: ER-DataReceived = {e.Data}");
                     }
+
+
+                    if (e.Data.Contains("error"))
+                    {
+                        //파이썬 강제 종료
+                        ProcessRun.ProcessFindAndKill("python");
+                        //  StstusPrint($"영상 분석 오류 발생 : {e.Data}");
+                        TextWriter.LoggingToFile(GetType().Name, $"영상 분석 오류 발생: {e.Data} {Environment.NewLine} 위치: {sourceInfo.FilePath}");
+                        MessageBox.Show($"{sourceInfo.FileFullName} 의  영상 분석 도중 오류가 발생되어 분석을 중단합니다");
+                        isError = true;
+
+                    }
+
+                    if (e.Data.Contains("오류"))
+                    {
+                        //파이썬 강제 종료
+                        ProcessRun.ProcessFindAndKill("python");
+                        //  StstusPrint($"영상 분석 오류 발생 : {e.Data}");
+                        TextWriter.LoggingToFile(GetType().Name, $"영상 분석 오류 : {e.Data} {Environment.NewLine} 위치: {sourceInfo.FilePath}");
+                        MessageBox.Show($"{sourceInfo.FileFullName} 의  영상 분석 도중 오류가 발생되어 분석을 중단합니다");
+                        isError = true;
+
+                    }
+
+
                 };
+
 
 
                 Proc.OutputDataReceived += (object sending_process, DataReceivedEventArgs e) =>
@@ -639,14 +708,6 @@ namespace KcopsAnalysis
             if (File.Exists(outputinfo.OutputFilePath))
             {
 
-              //  vlcControl.ResetMedia
-                vlcControl.ResetMedia();
-                vlcControl.Refresh();
-               // vlcControl.SetMedia(outputinfo.OutputFilePath);
-                vlcControl.Play(outputinfo.OutputFilePath);
-
-
-
 
             }
         }
@@ -664,7 +725,7 @@ namespace KcopsAnalysis
                 double[] Impactquantity = new double[3];
                 string[] ImpactTime = new string[3];
                 Process[] Processspython = Process.GetProcessesByName("Python.exe");
-                string PassedValue=string.Empty;
+                string PassedValue = string.Empty;
                 // 20230901 TODO  충격량 0,실제 충격량 값,0
                 // 동영상 재생 시작시간 0. 감지한 시간, 끝 시간
 
@@ -692,13 +753,20 @@ namespace KcopsAnalysis
                 {
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     StstusPrint($"충격 시간/구간 추출 대기중... 경과 시간: {stopwatch.Elapsed}");
+
+                    if (isError)
+                    {
+                        stopwatch.Stop(); //시간측정 끝
+                        StstusPrint($"영상 분석중 오류가 발생되어 중단 되었습니다. {stopwatch.Elapsed}");
+                        return "오류! 중단";
+                    }
                 }
 
 
                 if (File.Exists(outputinfo.OutputImage))
                 {
-                   // FileInfo fi = new FileInfo(outputinfo.OutputImage);
-                    
+                    // FileInfo fi = new FileInfo(outputinfo.OutputImage);
+
                     TextWriter.LoggingToFile(GetType().Name, $"ProcessStartAsync : 충격 수치 파일 생성 됨 ?!  : {outputinfo.OutputImage}");
                     await Task.Delay(100);
                     stopwatch.Stop(); //시간측정 끝
@@ -776,27 +844,19 @@ namespace KcopsAnalysis
 
                 if (File.Exists(outputinfo.OutputFilePath))
                 {
-
-                    //stopwatch.Stop();
-                    //vlcControl.ResetMedia();
-
-                    //vlcControl.SetMedia(outputinfo.OutputFilePath);
-                    //vlcControl.BeginInit();
-                    //vlcControl.Play();
-
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     Proc.StandardInput.Close();
-                    //Proc.WaitForExit();
-                    PassedValue = "AVi파일 생성 완료";
-                    
+
+                    FileInfo file = new(outputinfo.OutputFilePath);
+                    vlcControl.Invalidate();
+                    vlcControl.Play(file);
+                    PassedValue = "AVV 파일 생성 완료";
+
                 }
 
-                //await Task.Delay(TimeSpan.FromSeconds(1));
-                //Proc.StandardInput.Close();
-                ////Proc.WaitForExit();
                 return PassedValue;
             }
-            catch (Exception ex )
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
                 TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
@@ -828,9 +888,6 @@ namespace KcopsAnalysis
 
             return (Hours * 3600 + Minutes * 60 + Seconds) * 1000 + Milliseconds;
         }
-
-
-
 
         private void btnRePlay_Click(object sender, EventArgs e)
         {
@@ -870,18 +927,79 @@ namespace KcopsAnalysis
 
         private void BtnExit_Click(object sender, EventArgs e)
         {
-         //   vlcControl.OnPlaying();
-         ////   vlcControl.Update();    
-         //   vlcControl.ResetMedia();
-            vlcControl.Stop();
-            // vlcControl.Refresh();
-            // vlcControl.Update();
-            //  vlcControl.SetMedia("C:\\HitRun\\Demo\\SaveVideo\\demo1.mp4_0_output.avi");
-            
-            vlcControl.Video.IsKeyInputEnabled = true;
-           
-            vlcControl.Play("C:\\HitRun\\Demo\\SaveVideo\\demo1.mp4_0_output.avi");
-            vlcControl.ResetMedia();
+
+        }
+
+        private void VlcControl_MediaChanged(object? sender, VlcMediaPlayerMediaChangedEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_DoubleClick(object sender, EventArgs e)
+        {
+            if (dataGridView1.Rows.Count > 0)
+            {
+                var PlayFile = dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells[6].Value.ToString() + @"\" + dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells[1].Value.ToString();
+                TextWriter.LoggingToFile(GetType().Name, $" 재생목록 더블 클릭 : PlayFile ={PlayFile} ||  위치: dataGridView1_DoubleClick");
+
+            }
+        }
+
+        private void ButtonPlaying_Click(object sender, EventArgs e)
+        {
+            if (vlcControl.IsPlaying == true)
+            {
+                vlcControl.Pause();  //Pause 상태에서 또 Pause 누르면 다시 재생되므로 이렇게 둘 것.
+            }
+            else
+            {
+                vlcControl.Play();
+                Videoplayback();
+            }
+        }
+
+        private void BtnBackward_Click(object sender, EventArgs e)
+        {
+            if (PlayerHelpers.DisPlayFrameNumber - framemovementunit < 0)
+            {
+                MessageBox.Show("더 이상 프레임을 뒤로 이동할 수 없습니다.");
+                return;
+            }
+            Moveframe(PlayerHelpers.DisPlayFrameNumber - framemovementunit);
+        }
+
+        private void BtnForward_Click(object sender, EventArgs e)
+        {
+            Moveframe(framemovementunit = +1);
+        }
+
+        private void BtnCapture_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Moveframe(int FrameNumberMove)
+        {
+            //프레임 번호
+            int FrameNumber = 0;
+            //프레임 비율
+            double FrameRate;
+            //밀리초 계산
+            double MillisecondCount;
+
+            FrameNumber = FrameNumberMove;
+            FrameRate = 1.00 / PlayerHelpers.Fps;
+            MillisecondCount = FrameNumber * FrameRate * 1000;
+            vlcControl.Time = Convert.ToInt32((double)MillisecondCount);
+            if (vlcControl.IsPlaying == true)
+            {
+                vlcControl.Pause();  //Pause 상태에서 또 Pause 누르면 다시 재생되므로 이렇게 둘 것.
+            }
         }
     }
     #endregion

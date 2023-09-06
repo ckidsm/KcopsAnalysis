@@ -138,6 +138,7 @@ namespace KcopsAnalysis
             ButtonPlaying.Size = new Size(439, 45);
             ButtonPlaying.TabIndex = 0;
             ButtonPlaying.UseVisualStyleBackColor = false;
+            ButtonPlaying.Click += ButtonPlaying_Click;
             // 
             // BtnForward
             // 
@@ -154,6 +155,7 @@ namespace KcopsAnalysis
             BtnForward.Size = new Size(176, 45);
             BtnForward.TabIndex = 0;
             BtnForward.UseVisualStyleBackColor = false;
+            BtnForward.Click += BtnForward_Click;
             // 
             // BtnCapture
             // 
@@ -170,6 +172,7 @@ namespace KcopsAnalysis
             BtnCapture.Size = new Size(124, 45);
             BtnCapture.TabIndex = 0;
             BtnCapture.UseVisualStyleBackColor = false;
+            BtnCapture.Click += BtnCapture_Click;
             // 
             // BtnBackward
             // 
@@ -186,6 +189,7 @@ namespace KcopsAnalysis
             BtnBackward.Size = new Size(178, 45);
             BtnBackward.TabIndex = 0;
             BtnBackward.UseVisualStyleBackColor = false;
+            BtnBackward.Click += BtnBackward_Click;
             // 
             // tableLayoutPanel2
             // 
@@ -287,6 +291,8 @@ namespace KcopsAnalysis
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.Size = new Size(425, 274);
             dataGridView1.TabIndex = 3;
+            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
+            dataGridView1.DoubleClick += dataGridView1_DoubleClick;
             // 
             // rightLayoutPanel
             // 
