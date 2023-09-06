@@ -241,8 +241,8 @@ namespace KcopsAnalysis
             lblPlayerTime.Name = "lblPlayerTime";
             lblPlayerTime.Size = new Size(242, 37);
             lblPlayerTime.TabIndex = 2;
-            lblPlayerTime.Text = "재생시간";
-            lblPlayerTime.TextAlign = ContentAlignment.MiddleLeft;
+            lblPlayerTime.Text = "00:00:00";
+            lblPlayerTime.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // groupBox1
             // 
