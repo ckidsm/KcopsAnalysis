@@ -1,5 +1,6 @@
 namespace KcopsAnalysis
 {
+
     internal static class Program
     {
         /// <summary>

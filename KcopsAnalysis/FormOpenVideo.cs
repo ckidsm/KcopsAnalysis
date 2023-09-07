@@ -7,7 +7,7 @@ using Vlc.DotNet.Core;
 using System.Diagnostics;
 using ChartDirector;
 using System.Globalization;
-Chart.setLicenseCode("RDST-352K-3KBY-6HVZ-B975-7DFD");
+//Chart.setLicenseCode("RDST-352K-3KBY-6HVZ-B975-7DFD");
 namespace KcopsAnalysis
 {
     public partial class FormOpenVideo : Form
