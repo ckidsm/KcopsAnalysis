@@ -1,31 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Media;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Threading.Tasks;
 using Vlc.DotNet.Forms;
 using FontAwesome.Sharp;
 using Vlc.DotNet.Core;
 using System.Diagnostics;
 using ChartDirector;
 using System.Globalization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
-using System.Windows.Markup;
-using System.Reflection.Emit;
-using System.Windows.Interop;
-using Windows.ApplicationModel.UserDataTasks;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Runtime.Serialization;
-using System.IO;
 
 namespace KcopsAnalysis
 {
@@ -119,10 +100,8 @@ namespace KcopsAnalysis
         {
             Playertimer.Interval = 1000; // 1초
 
-#pragma warning disable CS8622 // 매개 변수 형식에서 참조 형식의 Null 허용 여부가 대상 대리자와 일치하지 않습니다(Null 허용 여부 특성 때문일 수 있음).
             Playertimer.Tick += new EventHandler(Playertimer_Tick);
-#pragma warning restore CS8622 // 매개 변수 형식에서 참조 형식의 Null 허용 여부가 대상 대리자와 일치하지 않습니다(Null 허용 여부 특성 때문일 수 있음).
-            //Playertimer.Start();      
+           
         }
 
         #endregion
@@ -202,15 +181,24 @@ namespace KcopsAnalysis
 
         private void VlcMediaPlayer_TimeChanged(object sender, VlcMediaPlayerTimeChangedEventArgs e)
         {
-            //vlcControl.Length 영상 전체 시간
-            //e.NewTime 현재 재싱 시간.
-            Invoke(new Action(() =>
+            try
             {
-                Player.VideoEndTime = TimeFormat((int)vlcControl.Length);
-                lblPlayerTime.Text = TimeFormat((int)e.NewTime) + "  | " + Player.VideoEndTime;
-                trackBar1.Maximum = (int)vlcControl.Length / 1000;
-                trackBar1.Value = (int)e.NewTime / 1000;
-            }));
+                //vlcControl.Length 영상 전체 시간
+                //e.NewTime 현재 재싱 시간.
+                Invoke(new Action(() =>
+                {
+                    Player.VideoEndTime = TimeFormat((int)vlcControl.Length);
+                    lblPlayerTime.Text = TimeFormat((int)e.NewTime) + "  | " + Player.VideoEndTime;
+                    trackBar1.Maximum = (int)vlcControl.Length / 1000;
+                    trackBar1.Value = (int)e.NewTime / 1000;
+                }));
+            }
+            catch (Exception ex)
+            {
+                TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
+              
+            }
+           
         }
         #endregion
 
@@ -258,25 +246,20 @@ namespace KcopsAnalysis
                 if (sourceInfo.FileFullName is not null)
                 {
                     FileInfo file = new(sourceInfo.FileFullName);
-//
+
                    FfprobeFrameValue();
 
-                    //  vlcControl.SetMedia(file);
                     isRunning = true;
                     // trackBar1.Value = vlcControl.TimeChanged;
                     table.Rows.Add(rowid.ToString(), sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
                     dataGridView1.DataSource = table;
                     dataGridView1.AutoResizeColumns();
-                    //  int nRowIndex = dataGridView1.Rows.Count - 1;
                     dataGridView1.Rows[dataGridView1.Rows.Count - 1].Selected = true;
+                    Videoplayback();
                     vlcControl.Invalidate();
-                  
                     vlcControl.Play(file);
                     trackBar1.Maximum = (int)vlcControl.Length;
-                    //PlayerHelpers.Timescale = TimeFormat((int)vlcControl.Length);
-                   
-                    Videoplayback();
-
+                    Playertimer.Start();
                 }
             }
             catch (Exception ex)
@@ -342,14 +325,10 @@ namespace KcopsAnalysis
         #region 동영상 재생 시작 시간 측정 
         private void Videoplayback()
         {
-            //  Playertimer.Start();
+           
             ButtonPlaying.IconChar = IconChar.Pushed;
             //https://github.com/ZeBobo5/Vlc.DotNet/issues/333
 
-            // vlcControl.Playing += new EventHandler<VlcMediaPlayerPlayingEventArgs>(SetProgressMax);
-
-            //trackBar1.Maximum = (int)vlcControl.Length / 1000;
-            //   var trackvalue = vlcControl.Video.Tracks;
         }
         #endregion
 
@@ -390,12 +369,12 @@ namespace KcopsAnalysis
         private void Playertimer_Tick(object sender, EventArgs e)
         {
 
-            lblPlayerTime.Text = vlcControl.Time.ToString();
+           // lblPlayerTime.Text = vlcControl.Time.ToString();
             //메소드에 넘겨주고
-            PlayerHelpers.MillisecondHourMinuteSecond(vlcControl.Time);
+          PlayerHelpers.MillisecondHourMinuteSecond(vlcControl.Time);
             //계산된 값을 대입 및 형식변환
 
-            lblPlayerTime.Text = $"{PlayerHelpers.Hour:00} : {PlayerHelpers.Minute:00} : {PlayerHelpers.Second:00}";
+            //lblPlayerTime.Text = $"{PlayerHelpers.Hour:00} : {PlayerHelpers.Minute:00} : {PlayerHelpers.Second:00}";
 
 
             DisplayFrameNumber();
@@ -416,6 +395,7 @@ namespace KcopsAnalysis
             frameapproximation = currentsecond / framerate;
             PlayerHelpers.DisPlayFrameNumber = Convert.ToInt32(Math.Truncate(frameapproximation));
             LblFps.Text = "영상 프레임  : " + PlayerHelpers.DisPlayFrameNumber;
+            LblFps.Update();
         }
         #endregion
 
@@ -626,14 +606,14 @@ namespace KcopsAnalysis
                     return;
                 }
                 // 영상이 재생중이면 재생 중지.
-                if (vlcControl.IsPlaying == true)
+                if (vlcControl.IsPlaying)
                     vlcControl.Stop();// Probably unnecessary
                 //타이머 중지
                 Playertimer.Stop();
 
                 //파이썬 강제 종료
                 ProcessRun.ProcessFindAndKill("python");
-                vlcControl.Invalidate();
+               // vlcControl.Invalidate();
 
                 TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} vlcControl.IsPlaying 상태 : {vlcControl.IsPlaying} ");
                 // 아웃풋 정보 정의 결과 동영상 파일, 수치 데이타 파일등.
@@ -662,9 +642,10 @@ namespace KcopsAnalysis
                 }
                 StstusPrint("영상 분석 시작");
 
-
+                //프로세스 이벤트 메시지 받기
                 ProcessStartEvent();
-
+                //프로세스 시작
+                ProcessStartSet();
                 StstusPrint("충격 시간 / 수치 추출  완료 | 소요시간 :  " + stopwatch.Elapsed.Seconds.ToString() + "초");
             }
             catch (Exception ex)
@@ -736,7 +717,7 @@ namespace KcopsAnalysis
                     }
                 };
 
-                ProcessStartSet();
+              //  ProcessStartSet();
             }
             catch (Exception ex)
             {
@@ -795,17 +776,7 @@ namespace KcopsAnalysis
                 Proc.StandardInput.Flush();
 
                 StstusPrint($" 명령어 전송 {AlgorithmArgumentsModeNew}");
-                //  await Task.Delay(10);
-                //파이썬이 실행중인지 확인 하자
-
-
-                //while ( Processspython.Length < 1 )
-                // {
-                //     StstusPrint($"{sourceInfo.FileFullName} : 파일영역 지정 대기 중:...");
-                // }
-
-                // StstusPrint($"{sourceInfo.FileFullName} : 영상 분석 시작:...");
-
+              
                 stopwatch.Start();
                 while (!File.Exists(outputinfo.OutputImage))
                 {
@@ -828,7 +799,7 @@ namespace KcopsAnalysis
                     // FileInfo fi = new FileInfo(outputinfo.OutputImage);
 
                     TextWriter.LoggingToFile(GetType().Name, $"ProcessStartAsync : 충격 수치 파일 생성 됨 ?!  : {outputinfo.OutputImage}");
-                    await Task.Delay(100);
+                    await Task.Delay(TimeSpan.FromSeconds(1));
                     stopwatch.Stop(); //시간측정 끝
 
                     // StstusPrint($" {fi.FullName} {stopwatch.ElapsedMilliseconds} ms");
@@ -918,6 +889,7 @@ namespace KcopsAnalysis
 
                     FileInfo file = new(outputinfo.OutputFilePath);
                     vlcControl.Invalidate();
+                    vlcControl.VlcMediaPlayer.TimeChanged +=  new EventHandler<VlcMediaPlayerTimeChangedEventArgs> (VlcMediaPlayer_TimeChanged);
                     vlcControl.Play(file);
                     PassedValue = "AVI 파일 생성 완료";
 
