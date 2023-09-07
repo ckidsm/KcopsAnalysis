@@ -168,8 +168,9 @@ namespace KcopsAnalysis
             vlcControl.VlcMediaPlayer.EndReached += VlcMediaPlayer_EndReached;
             vlcControl.PositionChanged += vlcControl_PositionChanged;
 
-            //this.vlcControl.PositionChanged += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPositionChangedEventArgs>(this.vlcControl_PositionChanged);
-            //vlcControl.Playing += new System.EventHandler<VlcMediaPlayerPlayingEventArgs>(SetProgresMax);
+            trackBar1.Maximum = 100;
+            trackBar1.Minimum = 0;
+            trackBar1.Value = 0;
 
         }
 
@@ -213,13 +214,11 @@ namespace KcopsAnalysis
             string strtime = string.Format("{0,1}:{1,2:D2}:{2,2:D2}", hours, minutes, seconds);
             return strtime;
 
-
         }
 
 
         private void vlcControl1_Playing(object sender, Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs e)
         {
-
 
             Invoke(new Action(() =>
             {
@@ -550,6 +549,10 @@ namespace KcopsAnalysis
         {
             //https://stackoverflow.com/questions/24449988/how-to-get-file-path-from-openfiledialog-and-folderbrowserdialog
 
+            trackBar1.Maximum = 100;
+            trackBar1.Minimum = 0;
+            trackBar1.Value = 0;
+
             vlcControl.Invalidate();
             if (vlcControl.IsPlaying)
             {
@@ -812,13 +815,28 @@ namespace KcopsAnalysis
                     //텍스트파일에서 충격량 시간을 가져온다.
                     var GraphReferenceValue = AccidentValue.Split('|');
 
-                    var num = GraphReferenceValue[0].ToString();
+                  //  var num = GraphReferenceValue[0];
                     // var OutputTIme_Data = String.Format("{0:yyyy-MM-dd HH:mm:dd}", GraphReferenceValue[0]);
-                    var OutputTIme_Data = System.String.Format("{0:hh:mm:ss.f}", GraphReferenceValue[0], ci);
+                    var OutputTIme_Data = Convert.ToDouble( GraphReferenceValue[0]); //System.String.Format("{0:D6}", GraphReferenceValue[0], ci);
+                    var value = (int)Math.Truncate(OutputTIme_Data);
 
-                    // 충격시간 그래프 구간
-                    ImpactTime[0] = ("0");
-                    ImpactTime[1] = (System.String.Format("{0:hh:mm:ss.f}", GraphReferenceValue[0], ci));
+
+                    TimeSpan t = TimeSpan.FromMilliseconds(OutputTIme_Data);
+                    string answer = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
+                                            t.Hours,
+                                            t.Minutes,
+                                            t.Seconds,
+                                            t.Milliseconds);
+                    var OutputTIme_Data_str0 =TimeSpan.FromSeconds(Convert.ToDouble(GraphReferenceValue[0])).ToString();
+
+                    var OutputTIme_Data_str = DisplayInSeconds(value.ToString());
+                   // var OutputTIme_Data_str1 = TimeCodeValue(value.ToString());
+                   //  var OutputTIme_Data_str = String.Format("{0:yyyy-MM-dd HH:mm:dd}", value.ToString());
+
+                   //Math.Truncate
+                   // 충격시간 그래프 구간
+                   ImpactTime[0] = ("0");
+                    ImpactTime[1] = TimeSpan.FromSeconds(Convert.ToDouble(GraphReferenceValue[0])).ToString();
                     ImpactTime[2] = Player.VideoEndTime;
 
                     //충격량 그래프 구간
