@@ -243,7 +243,7 @@ namespace KcopsAnalysis
         {
             try
             {
-               // var rowid = table.Rows.Count + 1;
+                // var rowid = table.Rows.Count + 1;
 
                 iconBtnAnalyze.Enabled = true;
                 lblStstus.Text = "선택된 영상 명 :" + sourceInfo.FileFullName;
@@ -251,29 +251,29 @@ namespace KcopsAnalysis
                 {
 
                     FileInfo file = new(sourceInfo.FileFullName);
-                    
+
                     FfprobeFrameValue();
 
                     isRunning = true;
-                    
-                    table.Rows.Add(table.Rows.Count+ 1, sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
-                    
+
+                    table.Rows.Add(table.Rows.Count + 1, sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
+
                     dataGridView1.DataSource = table;
-                    
+
                     dataGridView1.AutoResizeColumns();
-                    
+
                     dataGridView1.Rows[dataGridView1.Rows.Count - 1].Selected = true;
-                    
+
                     Videoplayback();
-                    
+
                     vlcControl.Invalidate();
-                    
+
                     vlcControl.Play(file);
-                    
+
                     trackBar1.Maximum = (int)vlcControl.Length;
-                    
+
                     Playertimer.Start();
-                    
+
                 }
             }
             catch (Exception ex)
@@ -562,8 +562,7 @@ namespace KcopsAnalysis
         #region 파일열기 클릭
         private void iconBtnFileOpen_Click(object sender, EventArgs e)
         {
-            //https://stackoverflow.com/questions/24449988/how-to-get-file-path-from-openfiledialog-and-folderbrowserdialog
-
+            
             trackBar1.Maximum = 100;
             trackBar1.Minimum = 0;
             trackBar1.Value = 0;
@@ -819,7 +818,7 @@ namespace KcopsAnalysis
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     stopwatch.Stop(); //시간측정 끝
 
-                
+
                     lock (fileLock)
                     {
                         AccidentValue = File.ReadAllText(outputinfo.OutputImage);
@@ -841,7 +840,7 @@ namespace KcopsAnalysis
                     var ddd = Math.Truncate(OutputTIme_Data);
 
                     //실수 반올림
-                    var dddd=Math.Round(OutputTIme_Data);
+                    var dddd = Math.Round(OutputTIme_Data);
                     string answer = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
                                             t.Hours,
                                             t.Minutes,
@@ -851,7 +850,7 @@ namespace KcopsAnalysis
 
                     var OutputTIme_Data_str = DisplayInSeconds(value.ToString());
                     // var OutputTIme_Data_str1 = TimeCodeValue(value.ToString());
-                  
+
 
                     //Math.Truncate
                     // 충격시간 그래프 구간
@@ -982,18 +981,21 @@ namespace KcopsAnalysis
             // vlcControl.Pause(); 
             // vlcControl.Time = trackBar1.Value;
             //trackBar1.Value =  (int) vlcControl.Time;
-            
+
 
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
-            if (vlcControl.IsPlaying)
-            {
-                var Maxvalue = trackBar1.Maximum;
-                vlcControl.Time = trackBar1.Value;
 
-            }
+            Invoke(new Action(() =>
+            {
+                vlcControl.Time = trackBar1.Value * 1000;
+                int b = (int)vlcControl.Time / 1000;
+                int d = b / 60;
+                b = b - d * 60;
+                lblPlayerTime.Text = d + ":" + b + "/" + c + ":" + a;
+            }));
 
         }
 
@@ -1088,20 +1090,25 @@ namespace KcopsAnalysis
         {
             if (AnalysisFigures)
             {
-                if (!string.IsNullOrEmpty( outputinfo.GraphReferenceValue[0]))
+                if (!string.IsNullOrEmpty(outputinfo.GraphReferenceValue[0]))
                 {
-                    
-                   
+
+
                     trackBar1.Value = (int)Math.Ceiling(Convert.ToDouble(outputinfo.GraphReferenceValue[0]));
                     vlcControl.Play();
                     System.Windows.Forms.Application.DoEvents();
                     vlcControl.Time = trackBar1.Value;
                     vlcControl.Pause();
                 }
-               
+
             }
 
-            
+
+        }
+
+        private void winChartViewer_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             panelMenu = new Panel();
-            iconButton4 = new FontAwesome.Sharp.IconButton();
+            iconBtnExit = new FontAwesome.Sharp.IconButton();
             iconButton3 = new FontAwesome.Sharp.IconButton();
             BtnVideoLoad = new FontAwesome.Sharp.IconButton();
             iconButton1 = new FontAwesome.Sharp.IconButton();
@@ -48,7 +48,7 @@
             // panelMenu
             // 
             panelMenu.BackColor = Color.FromArgb(21, 101, 192);
-            panelMenu.Controls.Add(iconButton4);
+            panelMenu.Controls.Add(iconBtnExit);
             panelMenu.Controls.Add(iconButton3);
             panelMenu.Controls.Add(BtnVideoLoad);
             panelMenu.Controls.Add(iconButton1);
@@ -59,20 +59,20 @@
             panelMenu.Size = new Size(144, 1041);
             panelMenu.TabIndex = 0;
             // 
-            // iconButton4
+            // iconBtnExit
             // 
-            iconButton4.FlatAppearance.BorderSize = 0;
-            iconButton4.FlatStyle = FlatStyle.Flat;
-            iconButton4.ForeColor = Color.White;
-            iconButton4.IconChar = FontAwesome.Sharp.IconChar.PowerOff;
-            iconButton4.IconColor = Color.Gainsboro;
-            iconButton4.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            iconButton4.Location = new Point(0, 568);
-            iconButton4.Name = "iconButton4";
-            iconButton4.Size = new Size(144, 58);
-            iconButton4.TabIndex = 1;
-            iconButton4.UseVisualStyleBackColor = true;
-            iconButton4.Click += iconButton3_Click;
+            iconBtnExit.FlatAppearance.BorderSize = 0;
+            iconBtnExit.FlatStyle = FlatStyle.Flat;
+            iconBtnExit.ForeColor = Color.White;
+            iconBtnExit.IconChar = FontAwesome.Sharp.IconChar.PowerOff;
+            iconBtnExit.IconColor = Color.Gainsboro;
+            iconBtnExit.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            iconBtnExit.Location = new Point(0, 568);
+            iconBtnExit.Name = "iconBtnExit";
+            iconBtnExit.Size = new Size(144, 58);
+            iconBtnExit.TabIndex = 1;
+            iconBtnExit.UseVisualStyleBackColor = true;
+            iconBtnExit.Click += iconBtnExit_Click;
             // 
             // iconButton3
             // 
@@ -226,7 +226,8 @@
             Controls.Add(panelTitleBar);
             Controls.Add(panelMenu);
             Name = "FormMainMenu";
-            Text = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
+            WindowState = FormWindowState.Maximized;
             panelMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             panelTitleBar.ResumeLayout(false);
@@ -240,7 +241,7 @@
         private FontAwesome.Sharp.IconButton iconButton3;
         private FontAwesome.Sharp.IconButton BtnVideoLoad;
         private FontAwesome.Sharp.IconButton iconButton1;
-        private FontAwesome.Sharp.IconButton iconButton4;
+        private FontAwesome.Sharp.IconButton iconBtnExit;
         private Panel panelTitleBar;
         private FontAwesome.Sharp.IconButton btnExit;
         private FontAwesome.Sharp.IconButton btnMaximize;

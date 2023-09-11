@@ -24,7 +24,8 @@ namespace KcopsAnalysis
             this.DoubleBuffered = true;
             this.MaximizedBounds = Screen.FromHandle(this.Handle).WorkingArea;
             StartDebugging()
-;        }
+;
+        }
 
         private struct RGBColors
         {
@@ -137,12 +138,7 @@ namespace KcopsAnalysis
 
         private void iconButton3_Click(object sender, EventArgs e)
         {
-            //FrmRealTimeDemo frmrealTimeDemo = new FrmRealTimeDemo();
-            //frmrealTimeDemo.ShowDialog();
-
-            System.Windows.Forms.Form f = new FrmRealTimeDemo();
-            f.ShowDialog();
-            f.Dispose();
+            Application.Exit();
         }
 
         private void iconButton2_Click(object sender, EventArgs e)
@@ -155,7 +151,7 @@ namespace KcopsAnalysis
 
         private void StartDebugging()
         {
-           
+
             string ProjectName = "KcopsAnalysis"; // Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location); // Get File Title
             string AssemblyName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             TextWriter.LOG_PATH = string.Format("{0}\\LOGS\\{1}", ProjectName, AssemblyName);
@@ -167,6 +163,11 @@ namespace KcopsAnalysis
             TextWriter.LoggingToFile(ProjectName, traceMsg);
 
 
+        }
+
+        private void iconBtnExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

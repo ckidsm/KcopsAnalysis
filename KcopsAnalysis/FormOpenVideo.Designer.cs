@@ -263,6 +263,7 @@ namespace KcopsAnalysis
             winChartViewer.Size = new Size(935, 273);
             winChartViewer.TabIndex = 0;
             winChartViewer.TabStop = false;
+            winChartViewer.Click += winChartViewer_Click;
             winChartViewer.DoubleClick += winChartViewer_DoubleClick;
             // 
             // MovieInfo
