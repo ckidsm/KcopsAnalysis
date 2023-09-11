@@ -41,32 +41,32 @@ namespace KcopsAnalysis
         //키프레임 추출 실패
         public static bool KeyframeExtractionFailed = false;
         //하드웨어 가속 옵션
-        public static string?HardwareAccelerationOptions = string.Empty;
+        public static string HardwareAccelerationOptions = string.Empty;
         //비디오 코덱 옵션
-        public static string?vcodecoptions = string.Empty;
+        public static string vcodecoptions = string.Empty;
 
         //비디오 코덱명
-        public static string?VideoCodec = string.Empty;
+        public static string VideoCodec = string.Empty;
         // 오디오 코덱명
-        public static string?AudioCodec = string.Empty;
+        public static string AudioCodec = string.Empty;
 
-        public static string?AudioEncoder = string.Empty;
+        public static string AudioEncoder = string.Empty;
 
-        public static string?VideoEncoder = string.Empty;
+        public static string VideoEncoder = string.Empty;
 
         public static int DisPlayFrameNumber;
 
         //종료값 미지정
         public static bool UnspecifiedExitValue = false;
         //자르기 종료시간명령어
-        public static string?CropEndTimeCommand = string.Empty;
+        public static string CropEndTimeCommand = string.Empty;
 
 
         public static ProcessStartInfo startInfo = new ProcessStartInfo(AppDomain.CurrentDomain.BaseDirectory + "\\ffmpeg.exe");
         public static ProcessStartInfo startInfo2 = new ProcessStartInfo(AppDomain.CurrentDomain.BaseDirectory + "\\ffprobe.exe");
         public static ProcessStartInfo startInfo3 = new ProcessStartInfo(AppDomain.CurrentDomain.BaseDirectory + "\\ffprobe.exe");
 
-        public static Process? processn;
+        public static Process processn;
         //시분초 
         public static long MillisecondHourMinute(string Hour, string Minute, string Second)
         {

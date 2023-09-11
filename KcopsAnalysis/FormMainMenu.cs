@@ -130,6 +130,7 @@ namespace KcopsAnalysis
 
         private void btnExit_Click(object sender, EventArgs e)
         {
+            ProcessRun.ProcessFindAndKill("python");
             Application.Exit();
         }
 
@@ -156,7 +157,7 @@ namespace KcopsAnalysis
         {
            
             string ProjectName = "KcopsAnalysis"; // Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location); // Get File Title
-            string? AssemblyName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            string AssemblyName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             TextWriter.LOG_PATH = string.Format("{0}\\LOGS\\{1}", ProjectName, AssemblyName);
             TextWriter.LOG_FILE = AssemblyName + ".LOG";
             // m_LogWriter.LOG_PATH_FILE = string.Format("{0}\\{1}_{2}.LOG", m_LogWriter.LOG_PATH, c, DateTime.Now.ToString("yyyy-MM-dd_hhmmss"));

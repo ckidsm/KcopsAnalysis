@@ -10,12 +10,12 @@ namespace KcopsAnalysis
     internal class VideoAnalysisSourceInfo
     {
         public VideoAnalysisSourceInfo() { }
-        public string? FileName { get; set; }
-        public string? FileFullName { get; set; }
-        public string? FilePath { get; set; }
+        public string FileName { get; set; }
+        public string FileFullName { get; set; }
+        public string FilePath { get; set; }
         public int FileSize { get; set; }
 
-        public string? FileContent { get; set; }
+        public string FileContent { get; set; }
 
 
         public DateTime CreationTime { get; set; }

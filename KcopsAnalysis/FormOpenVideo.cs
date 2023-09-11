@@ -7,6 +7,8 @@ using Vlc.DotNet.Core;
 using System.Diagnostics;
 using ChartDirector;
 using System.Globalization;
+using System.Runtime.Intrinsics.Arm;
+
 //Chart.setLicenseCode("RDST-352K-3KBY-6HVZ-B975-7DFD");
 namespace KcopsAnalysis
 {
@@ -49,6 +51,8 @@ namespace KcopsAnalysis
         private bool isRunning = false;
         // 에러 상태
         private bool isError = false;
+
+        private bool AnalysisFigures = false;
         public int a = 0;
         public int c = 0;
         public delegate void UpdateControlsDelegate(); //Execute when video loads
@@ -101,7 +105,7 @@ namespace KcopsAnalysis
             Playertimer.Interval = 1000; // 1초
 
             Playertimer.Tick += new EventHandler(Playertimer_Tick);
-           
+
         }
 
         #endregion
@@ -192,14 +196,15 @@ namespace KcopsAnalysis
                     lblPlayerTime.Text = TimeFormat((int)e.NewTime) + "  | " + Player.VideoEndTime;
                     trackBar1.Maximum = (int)vlcControl.Length / 1000;
                     trackBar1.Value = (int)e.NewTime / 1000;
+                    TextWriter.LoggingToFile(GetType().Name, $"VlcMediaPlayer_TimeChanged : trackBar1.Value = {trackBar1.Value} | e.NewTime ={e.NewTime} | trackBar1.Maximum ={trackBar1.Maximum} 위치: 영상재생 트랙바");
                 }));
             }
             catch (Exception ex)
             {
                 TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
-              
+
             }
-           
+
         }
         #endregion
 
@@ -238,27 +243,37 @@ namespace KcopsAnalysis
         {
             try
             {
-                var rowid = table.Rows.Count + 1;
+               // var rowid = table.Rows.Count + 1;
 
                 iconBtnAnalyze.Enabled = true;
                 lblStstus.Text = "선택된 영상 명 :" + sourceInfo.FileFullName;
                 if (sourceInfo.FileFullName is not null)
                 {
-                    FileInfo file = new(sourceInfo.FileFullName);
 
-                   FfprobeFrameValue();
+                    FileInfo file = new(sourceInfo.FileFullName);
+                    
+                    FfprobeFrameValue();
 
                     isRunning = true;
-                    // trackBar1.Value = vlcControl.TimeChanged;
-                    table.Rows.Add(rowid.ToString(), sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
+                    
+                    table.Rows.Add(table.Rows.Count+ 1, sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
+                    
                     dataGridView1.DataSource = table;
+                    
                     dataGridView1.AutoResizeColumns();
+                    
                     dataGridView1.Rows[dataGridView1.Rows.Count - 1].Selected = true;
+                    
                     Videoplayback();
+                    
                     vlcControl.Invalidate();
+                    
                     vlcControl.Play(file);
+                    
                     trackBar1.Maximum = (int)vlcControl.Length;
+                    
                     Playertimer.Start();
+                    
                 }
             }
             catch (Exception ex)
@@ -279,7 +294,7 @@ namespace KcopsAnalysis
                 var vlc = (VlcControl)sender;
                 trackBar1.Maximum = (int)vlc.Length;
             }));
-          
+
         }
 
         private void vlcControl_PositionChanged(object sender, VlcMediaPlayerPositionChangedEventArgs e)
@@ -324,7 +339,7 @@ namespace KcopsAnalysis
         #region 동영상 재생 시작 시간 측정 
         private void Videoplayback()
         {
-           
+
             ButtonPlaying.IconChar = IconChar.Pushed;
             //https://github.com/ZeBobo5/Vlc.DotNet/issues/333
 
@@ -368,9 +383,9 @@ namespace KcopsAnalysis
         private void Playertimer_Tick(object sender, EventArgs e)
         {
 
-           // lblPlayerTime.Text = vlcControl.Time.ToString();
+            // lblPlayerTime.Text = vlcControl.Time.ToString();
             //메소드에 넘겨주고
-          PlayerHelpers.MillisecondHourMinuteSecond(vlcControl.Time);
+            PlayerHelpers.MillisecondHourMinuteSecond(vlcControl.Time);
             //계산된 값을 대입 및 형식변환
 
             //lblPlayerTime.Text = $"{PlayerHelpers.Hour:00} : {PlayerHelpers.Minute:00} : {PlayerHelpers.Second:00}";
@@ -420,7 +435,7 @@ namespace KcopsAnalysis
 
                 PlayerHelpers.processn.WaitForExit(1);
 
-                string? result = PlayerHelpers.processn.StandardOutput.ReadLine(); //두번 찍히는 경우가 있어서 한 줄만 읽게 처리함.
+                string result = PlayerHelpers.processn.StandardOutput.ReadLine(); //두번 찍히는 경우가 있어서 한 줄만 읽게 처리함.
                 if (result is not null)
                 {
                     result = result.Replace("\r", "").Replace("\n", ""); //개행문자 \r \n 둘 다 지워야 정상 출력됨.
@@ -616,7 +631,7 @@ namespace KcopsAnalysis
 
                 //파이썬 강제 종료
                 ProcessRun.ProcessFindAndKill("python");
-               // vlcControl.Invalidate();
+                // vlcControl.Invalidate();
 
                 TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} vlcControl.IsPlaying 상태 : {vlcControl.IsPlaying} ");
                 // 아웃풋 정보 정의 결과 동영상 파일, 수치 데이타 파일등.
@@ -644,7 +659,7 @@ namespace KcopsAnalysis
                     TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} :: 충격 수치 파일 삭제 {outputinfo.OutputFilePath} ");
                 }
                 StstusPrint("영상 분석 시작");
-
+                AnalysisFigures = false;
                 //프로세스 이벤트 메시지 받기
                 ProcessStartEvent();
                 //프로세스 시작
@@ -655,6 +670,7 @@ namespace KcopsAnalysis
             {
                 MessageBox.Show(ex.Message);
                 TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
+                AnalysisFigures = false;
                 throw;
             }
 
@@ -710,8 +726,6 @@ namespace KcopsAnalysis
 
                 };
 
-
-
                 Proc.OutputDataReceived += (object sending_process, DataReceivedEventArgs e) =>
                 {
                     if (e.Data != null)
@@ -720,7 +734,7 @@ namespace KcopsAnalysis
                     }
                 };
 
-              //  ProcessStartSet();
+                //  ProcessStartSet();
             }
             catch (Exception ex)
             {
@@ -779,7 +793,7 @@ namespace KcopsAnalysis
                 Proc.StandardInput.Flush();
 
                 StstusPrint($" 명령어 전송 {AlgorithmArgumentsModeNew}");
-              
+
                 stopwatch.Start();
                 while (!File.Exists(outputinfo.OutputImage))
                 {
@@ -805,43 +819,49 @@ namespace KcopsAnalysis
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     stopwatch.Stop(); //시간측정 끝
 
-                    // StstusPrint($" {fi.FullName} {stopwatch.ElapsedMilliseconds} ms");
-                    // break;
+                
                     lock (fileLock)
                     {
                         AccidentValue = File.ReadAllText(outputinfo.OutputImage);
 
                     }
                     //텍스트파일에서 충격량 시간을 가져온다.
-                    var GraphReferenceValue = AccidentValue.Split('|');
+                    outputinfo.GraphReferenceValue = AccidentValue.Split('|');
 
-                  //  var num = GraphReferenceValue[0];
+                    //  var num = GraphReferenceValue[0];
                     // var OutputTIme_Data = String.Format("{0:yyyy-MM-dd HH:mm:dd}", GraphReferenceValue[0]);
-                    var OutputTIme_Data = Convert.ToDouble( GraphReferenceValue[0]); //System.String.Format("{0:D6}", GraphReferenceValue[0], ci);
+                    var OutputTIme_Data = Convert.ToDouble(outputinfo.GraphReferenceValue[0]); //System.String.Format("{0:D6}", GraphReferenceValue[0], ci);
                     var value = (int)Math.Truncate(OutputTIme_Data);
 
 
                     TimeSpan t = TimeSpan.FromMilliseconds(OutputTIme_Data);
+                    //소수점 올림
+                    var dd = Math.Ceiling(OutputTIme_Data);
+                    //소수점 제거
+                    var ddd = Math.Truncate(OutputTIme_Data);
+
+                    //실수 반올림
+                    var dddd=Math.Round(OutputTIme_Data);
                     string answer = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
                                             t.Hours,
                                             t.Minutes,
                                             t.Seconds,
                                             t.Milliseconds);
-                    var OutputTIme_Data_str0 =TimeSpan.FromSeconds(Convert.ToDouble(GraphReferenceValue[0])).ToString();
+                    var OutputTIme_Data_str0 = TimeSpan.FromSeconds(Convert.ToDouble(outputinfo.GraphReferenceValue[0])).ToString();
 
                     var OutputTIme_Data_str = DisplayInSeconds(value.ToString());
-                   // var OutputTIme_Data_str1 = TimeCodeValue(value.ToString());
-                   //  var OutputTIme_Data_str = String.Format("{0:yyyy-MM-dd HH:mm:dd}", value.ToString());
+                    // var OutputTIme_Data_str1 = TimeCodeValue(value.ToString());
+                  
 
-                   //Math.Truncate
-                   // 충격시간 그래프 구간
-                   ImpactTime[0] = ("0");
-                    ImpactTime[1] = TimeSpan.FromSeconds(Convert.ToDouble(GraphReferenceValue[0])).ToString();
+                    //Math.Truncate
+                    // 충격시간 그래프 구간
+                    ImpactTime[0] = ("0");
+                    ImpactTime[1] = TimeSpan.FromSeconds(Convert.ToDouble(outputinfo.GraphReferenceValue[0])).ToString();
                     ImpactTime[2] = Player.VideoEndTime;
 
                     //충격량 그래프 구간
                     Impactquantity[0] = 0;
-                    Impactquantity[1] = Double.Parse(GraphReferenceValue[1]); //1.9197
+                    Impactquantity[1] = Double.Parse(outputinfo.GraphReferenceValue[1]); //1.9197
                     Impactquantity[2] = 0;
 
                     // Create a XYChart object of size 600 x 400 pixels
@@ -881,6 +901,7 @@ namespace KcopsAnalysis
 
                     //include tool tip for the chart 
                     winChartViewer.ImageMap = c.getHTMLImageMap("clickable", "", "title='{xLabel}: {value} '");
+                    AnalysisFigures = true;
                 }
 
                 stopwatch.Start();
@@ -907,7 +928,7 @@ namespace KcopsAnalysis
 
                     FileInfo file = new(outputinfo.OutputFilePath);
                     vlcControl.Invalidate();
-                    vlcControl.VlcMediaPlayer.TimeChanged +=  new EventHandler<VlcMediaPlayerTimeChangedEventArgs> (VlcMediaPlayer_TimeChanged);
+                    vlcControl.VlcMediaPlayer.TimeChanged += new EventHandler<VlcMediaPlayerTimeChangedEventArgs>(VlcMediaPlayer_TimeChanged);
                     vlcControl.Play(file);
                     PassedValue = "AVI 파일 생성 완료";
 
@@ -961,28 +982,26 @@ namespace KcopsAnalysis
             // vlcControl.Pause(); 
             // vlcControl.Time = trackBar1.Value;
             //trackBar1.Value =  (int) vlcControl.Time;
+            
 
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
-            if(vlcControl.IsPlaying)
+            if (vlcControl.IsPlaying)
             {
                 var Maxvalue = trackBar1.Maximum;
                 vlcControl.Time = trackBar1.Value;
 
             }
 
-           
-            //lblPlayerTime.Text = TimeFormat((int)e.NewTime) + "  | " + TimeFormat((int)vlcControl.Length);
-            //trackBar1.Maximum = (int)vlcControl.Length / 1000;
-            //trackBar1.Value = (int)e.NewTime / 1000;
         }
 
 
         #region 닫기 클릭 이벤트
         private void BtnExit_Click(object sender, EventArgs e)
         {
+            ProcessRun.ProcessFindAndKill("python");
             Close();
         }
         #endregion
@@ -1063,6 +1082,26 @@ namespace KcopsAnalysis
             {
                 vlcControl.Pause();  //Pause 상태에서 또 Pause 누르면 다시 재생되므로 이렇게 둘 것.
             }
+        }
+
+        private void winChartViewer_DoubleClick(object sender, EventArgs e)
+        {
+            if (AnalysisFigures)
+            {
+                if (!string.IsNullOrEmpty( outputinfo.GraphReferenceValue[0]))
+                {
+                    
+                   
+                    trackBar1.Value = (int)Math.Ceiling(Convert.ToDouble(outputinfo.GraphReferenceValue[0]));
+                    vlcControl.Play();
+                    System.Windows.Forms.Application.DoEvents();
+                    vlcControl.Time = trackBar1.Value;
+                    vlcControl.Pause();
+                }
+               
+            }
+
+            
         }
     }
 

@@ -73,9 +73,9 @@ namespace KcopsAnalysis
         {
             var classname = Product;
             Thread thread = Thread.CurrentThread;
-            string? FileTitle = Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location); // Get File Title
-            string? AssemblyName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            string? LogFolder = $"{AssemblyName}\\LOGS";
+            string FileTitle = Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location); // Get File Title
+            string AssemblyName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            string LogFolder = $"{AssemblyName}\\LOGS";
             var LogPathfile = $"{LogFolder}\\{FileTitle}_{DateTime.Now.ToString("yyyy-MM-dd")}.LOG";
             using (TextWriterTraceListener writer = new TextWriterTraceListener(LogPathfile))
             {
