@@ -8,6 +8,7 @@ using System.Diagnostics;
 using ChartDirector;
 using System.Globalization;
 using System.Runtime.Intrinsics.Arm;
+using Vlc.DotNet.Core.Interops.Signatures;
 
 //Chart.setLicenseCode("RDST-352K-3KBY-6HVZ-B975-7DFD");
 namespace KcopsAnalysis
@@ -562,7 +563,7 @@ namespace KcopsAnalysis
         #region 파일열기 클릭
         private void iconBtnFileOpen_Click(object sender, EventArgs e)
         {
-            
+
             trackBar1.Maximum = 100;
             trackBar1.Minimum = 0;
             trackBar1.Value = 0;
@@ -664,6 +665,12 @@ namespace KcopsAnalysis
                 //프로세스 시작
                 ProcessStartSet();
                 StstusPrint("충격 시간 / 수치 추출  완료 | 소요시간 :  " + stopwatch.Elapsed.Seconds.ToString() + "초");
+
+                lblStstus.Text = "충격 시간 / 수치 추출  완료";
+                var result = CustomMessageBox.Show("This is an example of an OK Button Message Box.",
+                    "OK Button",
+                    MessageBoxButtons.OK);
+                lblStstus.Text = result.ToString() + " Selected";
             }
             catch (Exception ex)
             {
@@ -1088,17 +1095,18 @@ namespace KcopsAnalysis
 
         private void winChartViewer_DoubleClick(object sender, EventArgs e)
         {
+            float Hittime;
             if (AnalysisFigures)
             {
                 if (!string.IsNullOrEmpty(outputinfo.GraphReferenceValue[0]))
                 {
 
-
                     trackBar1.Value = (int)Math.Ceiling(Convert.ToDouble(outputinfo.GraphReferenceValue[0]));
+                    float.TryParse(outputinfo.GraphReferenceValue[0], out Hittime);
+                    vlcControl.OnPositionChanged(Hittime);
+                    Application.DoEvents();
                     vlcControl.Play();
-                    System.Windows.Forms.Application.DoEvents();
-                    vlcControl.Time = trackBar1.Value;
-                    vlcControl.Pause();
+
                 }
 
             }

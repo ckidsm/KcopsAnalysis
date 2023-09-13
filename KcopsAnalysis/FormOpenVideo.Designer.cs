@@ -102,7 +102,6 @@ namespace KcopsAnalysis
             lblStstus.Name = "lblStstus";
             lblStstus.Size = new Size(941, 52);
             lblStstus.TabIndex = 5;
-            lblStstus.Text = "가나라다라 마바사";
             // 
             // tableLayoutPanel3
             // 

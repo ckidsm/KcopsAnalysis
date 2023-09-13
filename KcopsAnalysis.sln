@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BBBCB14B-FE80-4388-BDAC-E0EE1EF5EE9F}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\..\..\Users\USER\Downloads\CustomMessageBox-main\CustomMessageBox-main\CustomMessageBox\Resources\chat.png = ..\..\..\Users\USER\Downloads\CustomMessageBox-main\CustomMessageBox-main\CustomMessageBox\Resources\chat.png
 	EndProjectSection
 EndProject
 Global
