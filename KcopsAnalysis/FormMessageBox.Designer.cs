@@ -29,19 +29,19 @@
         private void InitializeComponent()
         {
             panelBody = new Panel();
-            panelButtons = new Panel();
-            panelTitleBar = new Panel();
-            labelCaption = new Label();
-            btnClose = new Button();
-            pictureBoxIcon = new PictureBox();
             labelMessage = new Label();
-            button1 = new Button();
-            button2 = new Button();
+            pictureBoxIcon = new PictureBox();
+            panelButtons = new Panel();
             button3 = new Button();
+            button2 = new Button();
+            button1 = new Button();
+            panelTitleBar = new Panel();
+            btnClose = new Button();
+            labelCaption = new Label();
             panelBody.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxIcon).BeginInit();
             panelButtons.SuspendLayout();
             panelTitleBar.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBoxIcon).BeginInit();
             SuspendLayout();
             // 
             // panelBody
@@ -55,6 +55,27 @@
             panelBody.Size = new Size(466, 55);
             panelBody.TabIndex = 0;
             // 
+            // labelMessage
+            // 
+            labelMessage.AutoSize = true;
+            labelMessage.Dock = DockStyle.Fill;
+            labelMessage.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            labelMessage.Location = new Point(62, 0);
+            labelMessage.Name = "labelMessage";
+            labelMessage.Size = new Size(46, 17);
+            labelMessage.TabIndex = 4;
+            labelMessage.Text = "label1";
+            // 
+            // pictureBoxIcon
+            // 
+            pictureBoxIcon.Dock = DockStyle.Left;
+            pictureBoxIcon.Image = Properties.Resources.chat;
+            pictureBoxIcon.Location = new Point(0, 0);
+            pictureBoxIcon.Name = "pictureBoxIcon";
+            pictureBoxIcon.Size = new Size(62, 55);
+            pictureBoxIcon.TabIndex = 3;
+            pictureBoxIcon.TabStop = false;
+            // 
             // panelButtons
             // 
             panelButtons.Controls.Add(button3);
@@ -66,6 +87,42 @@
             panelButtons.Size = new Size(466, 63);
             panelButtons.TabIndex = 1;
             // 
+            // button3
+            // 
+            button3.BackColor = Color.SeaGreen;
+            button3.FlatStyle = FlatStyle.Flat;
+            button3.ForeColor = Color.WhiteSmoke;
+            button3.Location = new Point(304, 19);
+            button3.Name = "button3";
+            button3.Size = new Size(117, 32);
+            button3.TabIndex = 0;
+            button3.Text = "button1";
+            button3.UseVisualStyleBackColor = false;
+            // 
+            // button2
+            // 
+            button2.BackColor = Color.SeaGreen;
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.ForeColor = Color.WhiteSmoke;
+            button2.Location = new Point(152, 19);
+            button2.Name = "button2";
+            button2.Size = new Size(117, 32);
+            button2.TabIndex = 0;
+            button2.Text = "button1";
+            button2.UseVisualStyleBackColor = false;
+            // 
+            // button1
+            // 
+            button1.BackColor = Color.SeaGreen;
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.ForeColor = Color.WhiteSmoke;
+            button1.Location = new Point(12, 19);
+            button1.Name = "button1";
+            button1.Size = new Size(117, 32);
+            button1.TabIndex = 0;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = false;
+            // 
             // panelTitleBar
             // 
             panelTitleBar.BackColor = Color.CornflowerBlue;
@@ -76,18 +133,6 @@
             panelTitleBar.Name = "panelTitleBar";
             panelTitleBar.Size = new Size(466, 38);
             panelTitleBar.TabIndex = 2;
-            // 
-            // labelCaption
-            // 
-            labelCaption.AutoSize = true;
-            labelCaption.BackColor = Color.CornflowerBlue;
-            labelCaption.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            labelCaption.ForeColor = Color.White;
-            labelCaption.Location = new Point(3, 12);
-            labelCaption.Name = "labelCaption";
-            labelCaption.Size = new Size(46, 17);
-            labelCaption.TabIndex = 3;
-            labelCaption.Text = "label1";
             // 
             // btnClose
             // 
@@ -103,62 +148,17 @@
             btnClose.Text = "X";
             btnClose.UseVisualStyleBackColor = false;
             // 
-            // pictureBoxIcon
+            // labelCaption
             // 
-            pictureBoxIcon.Dock = DockStyle.Left;
-            pictureBoxIcon.Image = Properties.Resources.chat;
-            pictureBoxIcon.Location = new Point(0, 0);
-            pictureBoxIcon.Name = "pictureBoxIcon";
-            pictureBoxIcon.Size = new Size(62, 55);
-            pictureBoxIcon.TabIndex = 3;
-            pictureBoxIcon.TabStop = false;
-            // 
-            // labelMessage
-            // 
-            labelMessage.AutoSize = true;
-            labelMessage.Dock = DockStyle.Fill;
-            labelMessage.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            labelMessage.Location = new Point(62, 0);
-            labelMessage.Name = "labelMessage";
-            labelMessage.Size = new Size(46, 17);
-            labelMessage.TabIndex = 4;
-            labelMessage.Text = "label1";
-            // 
-            // button1
-            // 
-            button1.BackColor = Color.SeaGreen;
-            button1.FlatStyle = FlatStyle.Flat;
-            button1.ForeColor = Color.WhiteSmoke;
-            button1.Location = new Point(12, 19);
-            button1.Name = "button1";
-            button1.Size = new Size(117, 32);
-            button1.TabIndex = 0;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = false;
-            // 
-            // button2
-            // 
-            button2.BackColor = Color.SeaGreen;
-            button2.FlatStyle = FlatStyle.Flat;
-            button2.ForeColor = Color.WhiteSmoke;
-            button2.Location = new Point(152, 19);
-            button2.Name = "button2";
-            button2.Size = new Size(117, 32);
-            button2.TabIndex = 0;
-            button2.Text = "button1";
-            button2.UseVisualStyleBackColor = false;
-            // 
-            // button3
-            // 
-            button3.BackColor = Color.SeaGreen;
-            button3.FlatStyle = FlatStyle.Flat;
-            button3.ForeColor = Color.WhiteSmoke;
-            button3.Location = new Point(304, 19);
-            button3.Name = "button3";
-            button3.Size = new Size(117, 32);
-            button3.TabIndex = 0;
-            button3.Text = "button1";
-            button3.UseVisualStyleBackColor = false;
+            labelCaption.AutoSize = true;
+            labelCaption.BackColor = Color.CornflowerBlue;
+            labelCaption.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            labelCaption.ForeColor = Color.White;
+            labelCaption.Location = new Point(3, 12);
+            labelCaption.Name = "labelCaption";
+            labelCaption.Size = new Size(46, 17);
+            labelCaption.TabIndex = 3;
+            labelCaption.Text = "label1";
             // 
             // FormMessageBox
             // 
@@ -172,10 +172,10 @@
             Text = "FormMessageBox";
             panelBody.ResumeLayout(false);
             panelBody.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxIcon).EndInit();
             panelButtons.ResumeLayout(false);
             panelTitleBar.ResumeLayout(false);
             panelTitleBar.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBoxIcon).EndInit();
             ResumeLayout(false);
         }
 
