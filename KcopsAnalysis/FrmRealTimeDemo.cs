@@ -15,8 +15,8 @@ namespace KcopsAnalysis
 {
     public partial class FrmRealTimeDemo : Form
     {
-        // The data arrays that store the visible data. The data arrays are updated in realtime. In
-        // this demo, we plot the last 240 samples.
+        // 눈에 보이는 데이터를 저장하는 데이터 배열. 데이터 배열은 실시간으로 업데이트됩니다. 인
+        // 이 데모에서는 마지막 240개의 샘플을 그려봅니다.
         private const int sampleSize = 240;
         private DateTime[] timeStamps = new DateTime[sampleSize];
         private double[] dataSeriesA = new double[sampleSize];
@@ -25,12 +25,12 @@ namespace KcopsAnalysis
         private System.Windows.Forms.Timer dataRateTimer;
         private System.Windows.Forms.Timer chartUpdateTimer;
 
-        // The index of the array position to which new data values are added.
+        // 새 데이터 값이 추가되는 배열 위치의 인덱스입니다.
         private int currentIndex = 0;
 
-        // In this demo, we use a data generator driven by a timer to generate realtime data. The
-        // nextDataTime is an internal variable used by the data generator to keep track of which
-        // values to generate next.
+        // 이 데모에서는 실시간 데이터를 생성하기 위해 타이머에 의해 구동되는 데이터 생성기를 사용합니다
+        // nextDataTime은 데이터 생성기에서 사용하는 내부 변수입니다
+        // 다음에 생성할 값입니다.
         private DateTime nextDataTime = new DateTime(DateTime.Now.Ticks / 10000000 * 10000000);
 
         public FrmRealTimeDemo()
@@ -44,10 +44,10 @@ namespace KcopsAnalysis
             chartUpdateTimer = new System.Windows.Forms.Timer();
             dataRateTimer.Tick += new EventHandler(dataRateTimer_Tick);
            chartUpdateTimer.Tick += new System.EventHandler(chartUpdateTimer_Tick);
-            // Data generation rate
+            // data 발생률
             dataRateTimer.Interval = 250;
 
-            // Chart update rate, which can be different from the data generation rate.
+            // 차트 업데이트 속도, 데이터 생성 속도와 다를 수 있습니다.
             chartUpdateTimer.Interval = (int)samplePeriod.Value;
 
             // Initialize data buffer to no data.
@@ -223,9 +223,9 @@ namespace KcopsAnalysis
                 //layer.addDataSet(dataSeriesC, 0x0000ff, "Gamma");
             }
 
-            // Include track line with legend. If the mouse is on the plot area, show the track 
-            // line with legend at the mouse position; otherwise, show them for the latest data
-            // values (that is, at the rightmost position).
+            // 범례가 있는 트랙 라인을 포함합니다. 마우스가 플롯 영역에 있으면 트랙을 표시합니다
+            // 마우스 위치에 범례가 있는 줄을 그립니다. 그렇지 않으면 최신 데이터를 표시합니다
+            // 값(즉, 가장 오른쪽 위치).
             trackLineLegend(c, viewer.IsMouseOnPlotArea ? viewer.PlotAreaMouseX :
                 c.getPlotArea().getRightX());
 
@@ -248,17 +248,17 @@ namespace KcopsAnalysis
         //
         private void trackLineLegend(XYChart c, int mouseX)
         {
-            // Clear the current dynamic layer and get the DrawArea object to draw on it.
+            // 현재 동적 레이어를 지우고 DrawArea 객체가 그 위에 그리도록 합니다.
             DrawArea d = c.initDynamicLayer();
 
-            // The plot area object
+            // 플롯 영역 객체
             PlotArea plotArea = c.getPlotArea();
 
-            // Get the data x-value that is nearest to the mouse, and find its pixel coordinate.
+            // 마우스에 가장 가까운 데이터 x 값을 얻고 해당 픽셀 좌표를 찾습니다.
             double xValue = c.getNearestXValue(mouseX);
             int xCoor = c.getXCoor(xValue);
 
-            // Draw a vertical track line at the x-position
+            // x 위치에 수직 트랙 라인 그리기
             d.vline(plotArea.getTopY(), plotArea.getBottomY(), xCoor, d.dashLineColor(0x000000, 0x0101));
 
             // Container to hold the legend entries

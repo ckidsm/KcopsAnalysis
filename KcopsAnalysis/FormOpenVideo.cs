@@ -46,6 +46,9 @@ namespace KcopsAnalysis
         //알고리즘 디렉토리 
         private readonly string AlgorithmDirectory = @"C:\HitRun\Demo";
 
+        //임시폴더
+        private readonly string tempfolder = @"C:\temp";
+
         //파일 읽기 락
         private object fileLock = new object();
         // 분석 중
@@ -97,7 +100,7 @@ namespace KcopsAnalysis
         }
         private void FormOpenVideo_Load(object sender, EventArgs e)
         {
-
+            
         }
 
         #region 동영상 재생 시간 이벤트
@@ -372,9 +375,14 @@ namespace KcopsAnalysis
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
+            if (!Directory.Exists(tempfolder))
+             {
+                Directory.CreateDirectory(tempfolder);
+            }
+
             if (sourceInfo.FileFullName != null)
             {
-                CopyFile(sourceInfo.FileFullName, @"c:\temp\" + sourceInfo.FileName);
+                CopyFile(sourceInfo.FileFullName, tempfolder +@"\" + sourceInfo.FileName);
             }
 
         }
