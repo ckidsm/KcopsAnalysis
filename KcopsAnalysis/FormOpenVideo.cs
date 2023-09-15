@@ -675,10 +675,10 @@ namespace KcopsAnalysis
                 StstusPrint("충격 시간 / 수치 추출  완료 | 소요시간 :  " + stopwatch.Elapsed.Seconds.ToString() + "초");
 
                 lblStstus.Text = "충격 시간 / 수치 추출  완료";
-                var result = CustomMessageBox.Show("소요시간: " + stopwatch.Elapsed.Seconds.ToString() + "초",
-                    "OK Button",
-                    MessageBoxButtons.OK);
-                lblStstus.Text = result.ToString() + " Selected";
+                //var result = CustomMessageBox.Show("소요시간: " + stopwatch.Elapsed.Seconds.ToString() + "초",
+                //    "OK Button",
+                //    MessageBoxButtons.OK);
+                //lblStstus.Text = result.ToString() + " Selected";
             }
             catch (Exception ex)
             {
