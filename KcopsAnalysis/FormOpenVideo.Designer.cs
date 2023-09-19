@@ -44,6 +44,7 @@ namespace KcopsAnalysis
             LblFps = new Label();
             lblPlayerTime = new Label();
             groupBox1 = new GroupBox();
+            pictureBox = new PictureBox();
             winChartViewer = new ChartDirector.WinChartViewer();
             MovieInfo = new GroupBox();
             dataGridView1 = new DataGridView();
@@ -57,6 +58,7 @@ namespace KcopsAnalysis
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
             groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)winChartViewer).BeginInit();
             MovieInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
@@ -246,6 +248,7 @@ namespace KcopsAnalysis
             // groupBox1
             // 
             groupBox1.Controls.Add(winChartViewer);
+            groupBox1.Controls.Add(pictureBox);
             groupBox1.Dock = DockStyle.Fill;
             groupBox1.Location = new Point(3, 486);
             groupBox1.Name = "groupBox1";
@@ -253,6 +256,18 @@ namespace KcopsAnalysis
             groupBox1.TabIndex = 2;
             groupBox1.TabStop = false;
             groupBox1.Text = "분석결과";
+            // 
+            // pictureBox
+            // 
+            pictureBox.Dock = DockStyle.Fill;
+            pictureBox.Location = new Point(3, 28);
+            pictureBox.Name = "pictureBox";
+            pictureBox.Size = new Size(935, 273);
+            pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox.TabIndex = 1;
+            pictureBox.TabStop = false;
+            pictureBox.Click += pictureBox_Click;
+            pictureBox.DoubleClick += pictureBox_DoubleClick;
             // 
             // winChartViewer
             // 
@@ -262,6 +277,7 @@ namespace KcopsAnalysis
             winChartViewer.Size = new Size(935, 273);
             winChartViewer.TabIndex = 0;
             winChartViewer.TabStop = false;
+            winChartViewer.Visible = false;
             winChartViewer.Click += winChartViewer_Click;
             winChartViewer.DoubleClick += winChartViewer_DoubleClick;
             // 
@@ -322,7 +338,7 @@ namespace KcopsAnalysis
             BtnExit.BackColor = Color.FromArgb(21, 101, 192);
             BtnExit.Dock = DockStyle.Fill;
             BtnExit.FlatStyle = FlatStyle.Flat;
-            BtnExit.Font = new Font("나눔고딕 ExtraBold", 14.25F, FontStyle.Bold, GraphicsUnit.Point);
+            BtnExit.Font = new Font("나눔고딕 ExtraBold", 20.25F, FontStyle.Bold, GraphicsUnit.Point);
             BtnExit.ForeColor = SystemColors.ButtonFace;
             BtnExit.IconChar = FontAwesome.Sharp.IconChar.RightToBracket;
             BtnExit.IconColor = Color.Gainsboro;
@@ -331,6 +347,8 @@ namespace KcopsAnalysis
             BtnExit.Name = "BtnExit";
             BtnExit.Size = new Size(431, 136);
             BtnExit.TabIndex = 6;
+            BtnExit.Text = "종료";
+            BtnExit.TextAlign = ContentAlignment.BottomCenter;
             BtnExit.UseVisualStyleBackColor = false;
             BtnExit.Click += BtnExit_Click;
             // 
@@ -339,7 +357,7 @@ namespace KcopsAnalysis
             iconBtnFileOpen.BackColor = Color.FromArgb(21, 101, 192);
             iconBtnFileOpen.Dock = DockStyle.Fill;
             iconBtnFileOpen.FlatStyle = FlatStyle.Flat;
-            iconBtnFileOpen.Font = new Font("나눔고딕 ExtraBold", 14.25F, FontStyle.Bold, GraphicsUnit.Point);
+            iconBtnFileOpen.Font = new Font("나눔고딕 ExtraBold", 20.25F, FontStyle.Bold, GraphicsUnit.Point);
             iconBtnFileOpen.ForeColor = SystemColors.ButtonFace;
             iconBtnFileOpen.IconChar = FontAwesome.Sharp.IconChar.FolderOpen;
             iconBtnFileOpen.IconColor = Color.Gainsboro;
@@ -348,7 +366,8 @@ namespace KcopsAnalysis
             iconBtnFileOpen.Name = "iconBtnFileOpen";
             iconBtnFileOpen.Size = new Size(431, 132);
             iconBtnFileOpen.TabIndex = 3;
-            iconBtnFileOpen.TextAlign = ContentAlignment.MiddleLeft;
+            iconBtnFileOpen.Text = "파일열기";
+            iconBtnFileOpen.TextAlign = ContentAlignment.BottomCenter;
             iconBtnFileOpen.UseVisualStyleBackColor = false;
             iconBtnFileOpen.Click += iconBtnFileOpen_Click;
             // 
@@ -357,7 +376,7 @@ namespace KcopsAnalysis
             iconBtnAnalyze.BackColor = Color.FromArgb(21, 101, 192);
             iconBtnAnalyze.Dock = DockStyle.Fill;
             iconBtnAnalyze.FlatStyle = FlatStyle.Flat;
-            iconBtnAnalyze.Font = new Font("나눔고딕 ExtraBold", 14.25F, FontStyle.Bold, GraphicsUnit.Point);
+            iconBtnAnalyze.Font = new Font("나눔고딕 ExtraBold", 20.25F, FontStyle.Bold, GraphicsUnit.Point);
             iconBtnAnalyze.ForeColor = SystemColors.ButtonFace;
             iconBtnAnalyze.IconChar = FontAwesome.Sharp.IconChar.CarCrash;
             iconBtnAnalyze.IconColor = Color.Gainsboro;
@@ -366,6 +385,8 @@ namespace KcopsAnalysis
             iconBtnAnalyze.Name = "iconBtnAnalyze";
             iconBtnAnalyze.Size = new Size(431, 132);
             iconBtnAnalyze.TabIndex = 4;
+            iconBtnAnalyze.Text = "영상분석";
+            iconBtnAnalyze.TextAlign = ContentAlignment.BottomCenter;
             iconBtnAnalyze.UseVisualStyleBackColor = false;
             iconBtnAnalyze.Click += iconBtnAnalyze_Click;
             // 
@@ -374,7 +395,7 @@ namespace KcopsAnalysis
             btnRePlay.BackColor = Color.FromArgb(21, 101, 192);
             btnRePlay.Dock = DockStyle.Fill;
             btnRePlay.FlatStyle = FlatStyle.Flat;
-            btnRePlay.Font = new Font("나눔고딕 ExtraBold", 14.25F, FontStyle.Bold, GraphicsUnit.Point);
+            btnRePlay.Font = new Font("나눔고딕 ExtraBold", 20.25F, FontStyle.Bold, GraphicsUnit.Point);
             btnRePlay.ForeColor = SystemColors.ButtonFace;
             btnRePlay.IconChar = FontAwesome.Sharp.IconChar.Chalkboard;
             btnRePlay.IconColor = Color.Gainsboro;
@@ -383,6 +404,8 @@ namespace KcopsAnalysis
             btnRePlay.Name = "btnRePlay";
             btnRePlay.Size = new Size(431, 132);
             btnRePlay.TabIndex = 5;
+            btnRePlay.Text = "설정";
+            btnRePlay.TextAlign = ContentAlignment.BottomCenter;
             btnRePlay.UseVisualStyleBackColor = false;
             btnRePlay.Click += btnRePlay_Click;
             // 
@@ -404,6 +427,7 @@ namespace KcopsAnalysis
             tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
             groupBox1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)winChartViewer).EndInit();
             MovieInfo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
@@ -434,5 +458,6 @@ namespace KcopsAnalysis
         private FontAwesome.Sharp.IconButton btnRePlay;
         private FontAwesome.Sharp.IconButton BtnExit;
         private ChartDirector.WinChartViewer winChartViewer;
+        private PictureBox pictureBox;
     }
 }

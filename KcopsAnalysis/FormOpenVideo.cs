@@ -9,6 +9,10 @@ using ChartDirector;
 using System.Globalization;
 using System.Runtime.Intrinsics.Arm;
 using Vlc.DotNet.Core.Interops.Signatures;
+using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Reflection;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 //Chart.setLicenseCode("RDST-352K-3KBY-6HVZ-B975-7DFD");
 namespace KcopsAnalysis
@@ -100,7 +104,7 @@ namespace KcopsAnalysis
         }
         private void FormOpenVideo_Load(object sender, EventArgs e)
         {
-            
+
         }
 
         #region 동영상 재생 시간 이벤트
@@ -196,6 +200,7 @@ namespace KcopsAnalysis
                 //e.NewTime 현재 재싱 시간.
                 Invoke(new Action(() =>
                 {
+                    Player.VideoEndLength = vlcControl.Length;
                     Player.VideoEndTime = TimeFormat((int)vlcControl.Length);
                     lblPlayerTime.Text = TimeFormat((int)e.NewTime) + "  | " + Player.VideoEndTime;
                     trackBar1.Maximum = (int)vlcControl.Length / 1000;
@@ -278,6 +283,7 @@ namespace KcopsAnalysis
 
                     Playertimer.Start();
 
+                    TextWriter.LoggingToFile(GetType().Name, $"동영상 로드 (LoadMovie) |  영상 전체 길이 {vlcControl.Length}  | 위치: {file}");
                 }
             }
             catch (Exception ex)
@@ -290,16 +296,6 @@ namespace KcopsAnalysis
         }
         #endregion
 
-
-        private void SetProgresMax(object sender, VlcMediaPlayerPlayingEventArgs e)
-        {
-            Invoke(new Action(() =>
-            {
-                var vlc = (VlcControl)sender;
-                trackBar1.Maximum = (int)vlc.Length;
-            }));
-
-        }
 
         private void vlcControl_PositionChanged(object sender, VlcMediaPlayerPositionChangedEventArgs e)
         {
@@ -376,13 +372,13 @@ namespace KcopsAnalysis
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
             if (!Directory.Exists(tempfolder))
-             {
+            {
                 Directory.CreateDirectory(tempfolder);
             }
 
             if (sourceInfo.FileFullName != null)
             {
-                CopyFile(sourceInfo.FileFullName, tempfolder +@"\" + sourceInfo.FileName);
+                CopyFile(sourceInfo.FileFullName, tempfolder + @"\" + sourceInfo.FileName);
             }
 
         }
@@ -538,6 +534,10 @@ namespace KcopsAnalysis
                 throw;
             }
         }
+
+
+
+
         #endregion
 
         #region 작업 상태 정보 표시
@@ -607,7 +607,7 @@ namespace KcopsAnalysis
 
                     //확장자를 제거한 파일이름만 가져오기
                     // sourceInfo. FileName = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
-                    var fileStream = openFileDialog.OpenFile();
+                    //  var fileStream = openFileDialog.OpenFile();
 
                     DateTime creationTime = File.GetCreationTime(sourceInfo.FileFullName);
                     DateTime lastWriteTime = File.GetLastWriteTime(sourceInfo.FileFullName);
@@ -653,7 +653,8 @@ namespace KcopsAnalysis
                 //20230901 충격수치결과값 텍스트파일로 변경
                 //  outputinfo.OutputImage = sourceInfo.FilePath + @"\" + ExtensionRemoveName + "_impulse.png";
                 TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} vlcControl.IsPlaying 상태 : {vlcControl.IsPlaying} :: 아웃풋 영상 파일명 지정 :{outputinfo.OutputFileName} :: 아웃풋 영상 경로 지정 {outputinfo.OutputFilePath} ");
-                outputinfo.OutputImage = AlgorithmDirectory + @"\SaveLog" + @"\" + ExtensionRemoveName + "_Accident.txt";
+                outputinfo.OutputText = AlgorithmDirectory + @"\SaveLog" + @"\" + ExtensionRemoveName + "_Accident.txt";
+                outputinfo.OutputImage = AlgorithmDirectory + @"\SaveFig" + @"\" + ExtensionRemoveName + "_Abnormal_Probability.png";
                 TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} :: 충격 수치 파일명 및  경로 {outputinfo.OutputImage} ");
 
                 if (File.Exists(outputinfo.OutputFilePath))
@@ -666,6 +667,13 @@ namespace KcopsAnalysis
                     File.Delete(outputinfo.OutputImage);
                     TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} :: 충격 수치 파일 삭제 {outputinfo.OutputFilePath} ");
                 }
+
+                if (File.Exists(outputinfo.OutputText))
+                {
+                    File.Delete(outputinfo.OutputText);
+                    TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} :: 충격 수치 파일 삭제 {outputinfo.OutputText} ");
+                }
+
                 StstusPrint("영상 분석 시작");
                 AnalysisFigures = false;
                 //프로세스 이벤트 메시지 받기
@@ -675,10 +683,7 @@ namespace KcopsAnalysis
                 StstusPrint("충격 시간 / 수치 추출  완료 | 소요시간 :  " + stopwatch.Elapsed.Seconds.ToString() + "초");
 
                 lblStstus.Text = "충격 시간 / 수치 추출  완료";
-                //var result = CustomMessageBox.Show("소요시간: " + stopwatch.Elapsed.Seconds.ToString() + "초",
-                //    "OK Button",
-                //    MessageBoxButtons.OK);
-                //lblStstus.Text = result.ToString() + " Selected";
+
             }
             catch (Exception ex)
             {
@@ -800,16 +805,17 @@ namespace KcopsAnalysis
                 // 동영상 재생 시작시간 0. 감지한 시간, 끝 시간
 
                 // string AlgorithmArgumentsMode2 = "python demo_hit_n_run_tracking.py evaluate --video " + sourceInfo.FileFullName + " --mode 2 --conf_files .\\X_Decoder\\configs\\xdecoder\\svlp_focalt_lang.yaml --overrides WEIGHT .\\X_Decoder\\weight\\xdecoder_focalt_best_openseg.pt";
+                // string AlgorithmArgumentsModeNew = "python optical_demo.py --video " + sourceInfo.FileFullName +" --mode 0";
                 string AlgorithmArgumentsModeNew = "python optical_demo.py --video " + sourceInfo.FileFullName;
 
                 Proc.StandardInput.Write(AlgorithmArgumentsModeNew + Environment.NewLine);
 
                 Proc.StandardInput.Flush();
 
-                StstusPrint($" 명령어 전송 {AlgorithmArgumentsModeNew}");
+                StstusPrint($" 명령어 전송 :: => {AlgorithmArgumentsModeNew}");
 
                 stopwatch.Start();
-                while (!File.Exists(outputinfo.OutputImage))
+                while (!File.Exists(outputinfo.OutputText))
                 {
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     StstusPrint($"충격 시간/구간 추출 대기중... 경과 시간: {stopwatch.Elapsed}");
@@ -825,18 +831,18 @@ namespace KcopsAnalysis
                 }
 
 
-                if (File.Exists(outputinfo.OutputImage))
+                if (File.Exists(outputinfo.OutputText))
                 {
                     // FileInfo fi = new FileInfo(outputinfo.OutputImage);
 
-                    TextWriter.LoggingToFile(GetType().Name, $"ProcessStartAsync : 충격 수치 파일 생성 됨 ?!  : {outputinfo.OutputImage}");
+                    TextWriter.LoggingToFile(GetType().Name, $"ProcessStartAsync : 충격 수치 파일 생성 됨 ?!  : {outputinfo.OutputText}");
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     stopwatch.Stop(); //시간측정 끝
 
 
                     lock (fileLock)
                     {
-                        AccidentValue = File.ReadAllText(outputinfo.OutputImage);
+                        AccidentValue = File.ReadAllText(outputinfo.OutputText);
 
                     }
                     //텍스트파일에서 충격량 시간을 가져온다.
@@ -878,44 +884,47 @@ namespace KcopsAnalysis
                     Impactquantity[1] = Double.Parse(outputinfo.GraphReferenceValue[1]); //1.9197
                     Impactquantity[2] = 0;
 
-                    // Create a XYChart object of size 600 x 400 pixels
-                    XYChart c = new XYChart(935, 300);
+                    //  picrurebox 비활성화
+                    if (pictureBox.Visible)
+                    {
+                        pictureBox.Image = null; pictureBox.ImageLocation = null;
+                        pictureBox.Visible = false;
+                    }
 
-                    // Set default text color to dark grey (0x333333)
-                    c.setColor(Chart.TextColor, 0x333333);
+                    //// 차트 그린다.
+                    winChartViewer.Visible = true;
+                    CreateXYChart(Impactquantity, ImpactTime);
+                    Application.DoEvents();
+                    //알고리즘에서 그린 이미지를 넣는다 임시.
+                    //파일을 읽기 전용으로 연다.
 
-                    // Add a title box using grey (0x555555) 24pt Arial Bold font
-                    // c.addTitle("분석결과", "Arial Bold", 18, 0x555555);
 
-                    // Set the plotarea at (70, 60) and of size 500 x 300 pixels, with transparent
-                    // background and border and light grey (0xcccccc) horizontal grid lines
-                    // c.setPlotArea(300, 60, 400, 400 ,Chart.Transparent, -1, Chart.Transparent, 0xcccccc);
-                    c.setPlotArea(300, 10, 400, 200, Chart.Transparent, -1, Chart.Transparent, 0xcccccc);
+                    //pictureBox.Image = null; pictureBox.ImageLocation = null;
+                    //pictureBox.Image = StringToImage(outputinfo.OutputImage);
 
-                    // Set the x and y axis stems to transparent and the label font to 12pt Arial
-                    c.xAxis().setColors(Chart.Transparent);
-                    c.yAxis().setColors(Chart.Transparent);
-                    c.xAxis().setLabelStyle("Arial", 12);
-                    c.yAxis().setLabelStyle("Arial", 12);
 
-                    // 주어진 데이터를 사용하여 투명 테두리가 있는 파란색 막대 바
-                    c.addBarLayer(Impactquantity, 0x6699bb).setBorderColor(Chart.Transparent);
+                    //AnalysisFigures = true;
 
-                    //x 축 레이블 설정(충격시간)
-                    c.xAxis().setLabels(ImpactTime);
 
-                    //자동 y축 레이블의 경우 최소 간격을 40픽셀로 설정
-                    c.yAxis().setTickDensity(30);
+                    //using (System.IO.FileStream stream = new FileStream(outputinfo.OutputImage, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                    //{
+                    //    using (System.IO.BinaryReader br = new BinaryReader(stream))
+                    //    {
+                    //        var memoryStream = new MemoryStream(br.ReadBytes((int)stream.Length));
 
-                    // Add a title to the y axis using dark grey (0x555555) 14pt Arial Bold font
-                    c.yAxis().setTitle("", "Arial Bold", 14, 0x555555);
+                    //        Bitmap bitmap = new Bitmap(memoryStream);
+                    //        pictureBox.Image = null;
+                    //        pictureBox.Image = bitmap;
+                    //        pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+                    //        Application.DoEvents();
 
-                    // Output the chart
-                    winChartViewer.Chart = c;
+                    //        AnalysisFigures = true;
+                    //    }
+                    //}
 
-                    //include tool tip for the chart 
-                    winChartViewer.ImageMap = c.getHTMLImageMap("clickable", "", "title='{xLabel}: {value} '");
-                    AnalysisFigures = true;
+
+                    //pictureBox.Image = ;
+
                 }
 
                 stopwatch.Start();
@@ -958,6 +967,49 @@ namespace KcopsAnalysis
             }
 
         }
+
+        private void CreateXYChart(double[] Impactquantity, string[] ImpactTime)
+        {
+            // Create a XYChart object of size 600 x 400 pixels
+            XYChart c = new XYChart(935, 300);
+
+            // Set default text color to dark grey (0x333333)
+            c.setColor(Chart.TextColor, 0x333333);
+
+            // Add a title box using grey (0x555555) 24pt Arial Bold font
+            // c.addTitle("분석결과", "Arial Bold", 18, 0x555555);
+
+            // Set the plotarea at (70, 60) and of size 500 x 300 pixels, with transparent
+            // background and border and light grey (0xcccccc) horizontal grid lines
+            // c.setPlotArea(300, 60, 400, 400 ,Chart.Transparent, -1, Chart.Transparent, 0xcccccc);
+            c.setPlotArea(300, 10, 400, 200, Chart.Transparent, -1, Chart.Transparent, 0xcccccc);
+
+            // Set the x and y axis stems to transparent and the label font to 12pt Arial
+            c.xAxis().setColors(Chart.Transparent);
+            c.yAxis().setColors(Chart.Transparent);
+            c.xAxis().setLabelStyle("Arial", 12);
+            c.yAxis().setLabelStyle("Arial", 12);
+
+            // 주어진 데이터를 사용하여 투명 테두리가 있는 파란색 막대 바
+            c.addBarLayer(Impactquantity, 0x6699bb).setBorderColor(Chart.Transparent);
+
+            //x 축 레이블 설정(충격시간)
+            c.xAxis().setLabels(ImpactTime);
+
+            //자동 y축 레이블의 경우 최소 간격을 40픽셀로 설정
+            c.yAxis().setTickDensity(30);
+
+            // Add a title to the y axis using dark grey (0x555555) 14pt Arial Bold font
+            c.yAxis().setTitle("", "Arial Bold", 14, 0x555555);
+
+            // Output the chart
+
+            winChartViewer.Chart = c;
+
+            //include tool tip for the chart 
+            winChartViewer.ImageMap = c.getHTMLImageMap("clickable", "", "title='{xLabel}: {value} '");
+            AnalysisFigures = true;
+        }
         #endregion
 
 
@@ -987,8 +1039,17 @@ namespace KcopsAnalysis
 
         private void btnRePlay_Click(object sender, EventArgs e)
         {
-            Form1 frm = new Form1();
-            frm.ShowDialog();
+            //FrmRealTimeDemo frm = new FrmRealTimeDemo();
+            //frm.ShowDialog();
+            // long value = 5.699999999999999;
+            long vout = Convert.ToInt64(5.699999999999999);
+            if (vlcControl.IsPlaying)
+            {
+                vlcControl.Stop();
+            }
+            vlcControl.Time = vout;
+            trackBar1.Value = (int)vlcControl.Time / 1000;
+            vlcControl.Play();
         }
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)
@@ -1079,11 +1140,17 @@ namespace KcopsAnalysis
 
         private void BtnCapture_Click(object sender, EventArgs e)
         {
-
+            //TakeFfmpegScreenshot();
+            Screenshot();
         }
 
         private void Moveframe(int FrameNumberMove)
         {
+
+            if (winChartViewer.Visible)
+            {
+                winChartViewer.Visible = false;
+            }
             //프레임 번호
             int FrameNumber = 0;
             //프레임 비율
@@ -1103,16 +1170,15 @@ namespace KcopsAnalysis
 
         private void winChartViewer_DoubleClick(object sender, EventArgs e)
         {
-            float Hittime;
+
             if (AnalysisFigures)
             {
                 if (!string.IsNullOrEmpty(outputinfo.GraphReferenceValue[0]))
                 {
+                    long ChkTimeValue = Convert.ToInt64((int)Math.Ceiling(Convert.ToDouble(outputinfo.GraphReferenceValue[0])));
+                    trackBar1.Value = (int)ChkTimeValue;
+                    vlcControl.Time = trackBar1.Value * 1000;
 
-                    trackBar1.Value = (int)Math.Ceiling(Convert.ToDouble(outputinfo.GraphReferenceValue[0]));
-                    float.TryParse(outputinfo.GraphReferenceValue[0], out Hittime);
-                    vlcControl.OnPositionChanged(Hittime);
-                    Application.DoEvents();
                     vlcControl.Play();
 
                 }
@@ -1124,6 +1190,135 @@ namespace KcopsAnalysis
 
         private void winChartViewer_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void pictureBox_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox_DoubleClick(object sender, EventArgs e)
+        {
+            float Hittime;
+            int FrameNumber = 0;
+            //프레임 비율
+            double FrameRate;
+            //밀리초 계산
+            double MillisecondCount;
+
+            if (AnalysisFigures)
+
+            {
+                if (!string.IsNullOrEmpty(outputinfo.GraphReferenceValue[0]))
+                {
+
+                    long ChkTimeValue = Convert.ToInt64((int)Math.Ceiling(Convert.ToDouble(outputinfo.GraphReferenceValue[0])));
+
+                    if (ChkTimeValue < 0)
+                    {
+                        lblPlayerTime.Text = "분석결과 영상 시작 시간을 알수 없습니다. 다시 분석 하여 주십시오";
+                        return;
+                    }
+
+                    FileInfo file = new(sourceInfo.FileFullName);
+
+                    FfprobeFrameValue();
+
+                    isRunning = true;
+
+
+                    Videoplayback();
+
+                    vlcControl.Invalidate();
+
+                    vlcControl.Play(file);
+                    trackBar1.Value = 0;
+                    trackBar1.Maximum = (int)vlcControl.Length;
+
+                    Playertimer.Start();
+
+
+                    vlcControl.Play();
+                    vlcControl.Time = ChkTimeValue;
+                    trackBar1.Value = (int)vlcControl.Time / 1000;
+
+
+
+                    // vlcControl.Position = ChkTimeValue;
+
+                }
+
+            }
+        }
+
+        private void TakeFfmpegScreenshot()
+        {
+
+            int framenumber;
+            double framerate;
+            double millisecondcalculation;
+
+            framenumber = Convert.ToInt32(PlayerHelpers.DisPlayFrameNumber);
+
+            framerate = 1.00 / Convert.ToDouble(Player.Fps); // 1.00 / fps. 이때 나누는 값들이 모두 소수점이 있어야 한다.
+            millisecondcalculation = framenumber * framerate;
+
+            //배치파일 생성방법
+            //bat 파일 생성하고 자동 실행시킨 뒤 결과 txt를 다시 가져오기로 했다.
+            StreamWriter objwriter = new StreamWriter(Application.StartupPath + "\\frame_screenshot.bat");
+            string command1 = @"ffmpeg -ss " + millisecondcalculation + " -i " + sourceInfo.FileFullName + " -vf scale=320:240 -vframes 1 -q:v 2 -y frame_shot.jpg";
+            objwriter.WriteLine(command1);
+            objwriter.Close();
+
+            //MessageBox.Show("성공적으로 배치 파일을 생성했습니다.");
+            //배치 파일 실행 - 화면 안뜨게 설정.
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.StartInfo.FileName = Application.StartupPath + "\\frame_screenshot.bat";
+            p.Start();
+
+            //Process.Start(Application.StartupPath + "\\frame_screenshot.bat");
+
+            //사진 파일 제대로 갱신이 안되서 500 밀리초 대기
+            System.Threading.Thread.Sleep(500);
+
+            pictureBox.ImageLocation = AppDomain.CurrentDomain.BaseDirectory + "\\frame_shot.jpg";
+        }
+
+        private void Screenshot()
+        {
+            string AssemblyName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            string screenshot = $"{AssemblyName}\\screenshot";
+            string screenshotfile = screenshot + @"\" + sourceInfo.FileName + "frame_shot.jpg";
+            if (!Directory.Exists(screenshot))
+            {
+                Directory.CreateDirectory(screenshot);
+            }
+            ThreadPool.QueueUserWorkItem(_ => vlcControl.TakeSnapshot(new FileInfo(screenshotfile), 400, 400));
+
+            if (File.Exists(screenshotfile))
+            {
+                pictureBox.Image = null; pictureBox.ImageLocation = null;
+                pictureBox.Image = StringToImage(screenshot + @"\" + sourceInfo.FileName + "frame_shot.jpg");
+                Application.DoEvents();
+            }
+        }
+
+        private Bitmap StringToImage(string Str)
+        {
+            using (System.IO.FileStream stream = new FileStream(Str, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+                using (System.IO.BinaryReader br = new BinaryReader(stream))
+                {
+                    var memoryStream = new MemoryStream(br.ReadBytes((int)stream.Length));
+
+                    Bitmap bitmap = new Bitmap(memoryStream);
+                    return bitmap;
+                }
+            }
 
         }
     }

@@ -70,15 +70,15 @@ namespace KcopsAnalysis
             do
             {
                 //
-                // In this demo, we use some formulas to generate new values. In real applications,
-                // it may be replaced by some data acquisition code.
+                // 이 데모에서는 새로운 값을 생성하기 위해 몇 가지 공식을 사용합니다. 실제 응용 프로그램에서는,
+                // 일부 데이터 획득 코드로 대체될 수도 있습니다.
                 //
                 double p = nextDataTime.Ticks / 10000000.0 * 4;
                 double dataA = 20 + Math.Cos(p * 2.2) * 10 + 1 / (Math.Cos(p) * Math.Cos(p) + 0.01);
                 //double dataB = 150 + 100 * Math.Sin(p / 27.7) * Math.Sin(p / 10.1);
                 //double dataC = 150 + 100 * Math.Cos(p / 6.7) * Math.Cos(p / 11.9);
 
-                // After obtaining the new values, we need to update the data arrays.
+                // 새 값을 구한 후 데이터 배열을 업데이트해야 합니다.
                 if (currentIndex < timeStamps.Length)
                 {
                     // Store the new values in the current index position, and increment the index.
@@ -169,20 +169,27 @@ namespace KcopsAnalysis
         //
         private void drawChart(WinChartViewer viewer)
         {
-            // Create an XYChart object 600 x 270 pixels in size, with light grey (f4f4f4) 
-            // background, black (000000) border, 1 pixel raised effect, and with a rounded frame.
+            // 연회색(f4f4f4)을 사용하여 600 x 270 픽셀 크기의 XYChart 객체를 만듭니다
+            // 배경, 검은색(000000) 테두리, 1픽셀 상승 효과, 둥근 프레임.
             XYChart c = new XYChart(600, 270, 0xf4f4f4, 0x000000, 1);
             c.setRoundedFrame(Chart.CColor(BackColor));
 
             // Set the plotarea at (55, 55) and of size 520 x 185 pixels. Use white (ffffff) 
             // background. Enable both horizontal and vertical grids by setting their colors to 
             // grey (cccccc). Set clipping mode to clip the data lines to the plot area.
+
+            // 플롯 면적을 (55, 55)로 설정하고 520 x 185 픽셀 크기로 설정합니다. 흰색(fffff)을 사용합니다
+            // background. 색상을 다음과 같이 설정하여 수평 및 수직 그리드를 모두 활성화합니다
+            // 회색(cccccc). 플롯 영역에 데이터 라인을 클리핑하도록 클리핑 모드를 설정합니다.
+
             c.setPlotArea(55, 55, 520, 185, 0xffffff, -1, -1, 0xcccccc, 0xcccccc);
             c.setClipping();
 
             // Add a title to the chart using 15 pts Times New Roman Bold Italic font, with a light
             // grey (dddddd) background, black (000000) border, and a glass like raised effect.
-            c.addTitle("Field Intensity at Observation Satellite", "Times New Roman Bold Italic", 15
+            // 15 pts를 사용하여 차트에 제목 추가 Times New Roman Bold Italic 글꼴, 조명 포함
+            // 회색(ddddddd) 배경, 검은색(000000) 테두리, 유리 같은 융기 효과.
+            c.addTitle("영상변화률", "Times New Roman Bold Italic", 15
                 ).setBackground(0xdddddd, 0x000000, Chart.glassEffect());
 
             // Set the reference font size of the legend box
@@ -218,7 +225,7 @@ namespace KcopsAnalysis
                 layer.setXData(timeStamps);
 
                 // The 3 data series are used to draw 3 lines.
-                layer.addDataSet(dataSeriesA, 0xff0000, "Alpha");
+                layer.addDataSet(dataSeriesA, 0xff0000, "충격량");
                 //layer.addDataSet(dataSeriesB, 0x00cc00, "Beta");
                 //layer.addDataSet(dataSeriesC, 0x0000ff, "Gamma");
             }
