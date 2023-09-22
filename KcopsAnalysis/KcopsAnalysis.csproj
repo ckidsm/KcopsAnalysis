@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="ChartDirector.Net.Desktop.Controls" Version="7.1.0" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="FontAwesome.Sharp" Version="6.3.0" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.18" />
     <PackageReference Include="Vlc.DotNet.Core" Version="3.1.0" />
