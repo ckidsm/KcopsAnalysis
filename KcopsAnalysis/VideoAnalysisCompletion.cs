@@ -14,9 +14,13 @@ namespace KcopsAnalysis
 
         public string OutputImage { get; set; }
 
+        public string OutputText { get; set; }
+
         public string[] GraphReferenceValue { get; set; }
 
         public int FileSize { get; set; }
+        public int Movielength { get;set; }
         public string Description { get; set; }
+
     }
 }

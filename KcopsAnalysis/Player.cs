@@ -48,6 +48,8 @@ namespace KcopsAnalysis
         public static bool UnspecifiedExitValue;
         //자르기 종료시간명령어
         public static string  CropEndTimeCommand;
+        
+        public static long VideoEndLength;
 
 
         public static ProcessStartInfo startInfo = new ProcessStartInfo(AppDomain.CurrentDomain.BaseDirectory + "\\ffmpeg.exe");

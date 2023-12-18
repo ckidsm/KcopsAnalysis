@@ -83,16 +83,16 @@ namespace KcopsAnalysis
         public static void MillisecondHourMinuteSecond(long Millisecond)
         {
             //초밀리초
-            SecondMillisecond = Convert.ToDouble(Millisecond / 1000.000);
+            PlayerHelpers.SecondMillisecond = Convert.ToDouble(Millisecond / 1000.000);
 
             //초 - 60초 도달하면 0으로 바뀌도록 나머지 연산도 실시
-            Second = Convert.ToInt32(Math.Truncate(SecondMillisecond % 60));
+            PlayerHelpers.Second = Convert.ToInt32(Math.Truncate(SecondMillisecond % 60));
 
             //분 - 60초 도달하면 0으로 바뀌도록 나머지 연산도 실시
-            Minute = Convert.ToInt32(Math.Truncate(Millisecond / 60000.0) % 60);
+            PlayerHelpers.Minute = Convert.ToInt32(Math.Truncate(Millisecond / 60000.0) % 60);
 
             //시
-            Hour = Convert.ToInt32(Math.Truncate(Millisecond / 3600000.0));
+            PlayerHelpers.Hour = Convert.ToInt32(Math.Truncate(Millisecond / 3600000.0));
         }
     }
 }
