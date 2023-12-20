@@ -30,8 +30,10 @@
         {
             winChartViewer1 = new ChartDirector.WinChartViewer();
             vlcControl1 = new Vlc.DotNet.Forms.VlcControl();
+            vlcControl2 = new Vlc.DotNet.Forms.VlcControl();
             ((System.ComponentModel.ISupportInitialize)winChartViewer1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)vlcControl1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)vlcControl2).BeginInit();
             SuspendLayout();
             // 
             // winChartViewer1
@@ -58,11 +60,24 @@
             vlcControl1.VlcMediaplayerOptions = null;
             vlcControl1.Playing += vlcControl1_Playing;
             // 
+            // vlcControl2
+            // 
+            vlcControl2.BackColor = Color.Black;
+            vlcControl2.Location = new Point(150, 264);
+            vlcControl2.Name = "vlcControl2";
+            vlcControl2.Size = new Size(316, 191);
+            vlcControl2.Spu = -1;
+            vlcControl2.TabIndex = 2;
+            vlcControl2.Text = "vlcControl2";
+            vlcControl2.VlcLibDirectory = null;
+            vlcControl2.VlcMediaplayerOptions = null;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1077, 672);
+            Controls.Add(vlcControl2);
             Controls.Add(vlcControl1);
             Controls.Add(winChartViewer1);
             Name = "Form1";
@@ -70,6 +85,7 @@
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)winChartViewer1).EndInit();
             ((System.ComponentModel.ISupportInitialize)vlcControl1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)vlcControl2).EndInit();
             ResumeLayout(false);
         }
 
@@ -77,5 +93,6 @@
 
         private ChartDirector.WinChartViewer winChartViewer1;
         private Vlc.DotNet.Forms.VlcControl vlcControl1;
+        private Vlc.DotNet.Forms.VlcControl vlcControl2;
     }
 }

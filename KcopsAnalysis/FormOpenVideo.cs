@@ -97,7 +97,7 @@ namespace KcopsAnalysis
                 var apppath = Application.StartupPath;
 
                 SoundPath = Path.GetFullPath(Path.Combine(apppath, "sound"));
-               // var rootpath1 = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+                // var rootpath1 = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
             }
             catch (Exception ex)
             {
@@ -173,6 +173,8 @@ namespace KcopsAnalysis
             libDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "libvlc", IntPtr.Size == 4 ? "x86" : "win-x64"));
             vlcControl.VlcLibDirectory = libDirectory;
             vlcControl.VlcMediaplayerOptions = new string[] { "--subsdec-encoding=cp949", "--freetype-font=Malgun Gothic" };
+            vlcControl.Scale(2f);
+            
             vlcControl.EndInit();
             vlcControl.Dock = DockStyle.Fill;
             //테이블 패널 ADD
@@ -268,13 +270,6 @@ namespace KcopsAnalysis
 
                     isRunning = true;
 
-                    table.Rows.Add(table.Rows.Count + 1, sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
-
-                    dataGridView1.DataSource = table;
-
-                    dataGridView1.AutoResizeColumns();
-
-                    dataGridView1.Rows[dataGridView1.Rows.Count - 1].Selected = true;
 
                     Videoplayback();
 
@@ -296,6 +291,17 @@ namespace KcopsAnalysis
                 this.Close();
             }
 
+        }
+
+        private void GridAdd()
+        {
+            table.Rows.Add(table.Rows.Count + 1, sourceInfo.FileName, PlayerHelpers.Fps, PlayerHelpers.VideoCodec, PlayerHelpers.AudioCodec, PlayerHelpers.Timescale, sourceInfo.FilePath, sourceInfo.CreationTime, sourceInfo.LastWriteTime);
+
+            dataGridView1.DataSource = table;
+
+            dataGridView1.AutoResizeColumns();
+
+            dataGridView1.Rows[dataGridView1.Rows.Count - 1].Selected = true;
         }
         #endregion
 
@@ -364,6 +370,7 @@ namespace KcopsAnalysis
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             LoadMovie();
+            GridAdd();
         }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -975,7 +982,7 @@ namespace KcopsAnalysis
                 //    PassedValue = "AVI 파일 생성 완료";
 
                 //}
-              
+
 
 
                 return PassedValue;
@@ -1139,8 +1146,9 @@ namespace KcopsAnalysis
             }
             else
             {
-                vlcControl.Play();
-                Videoplayback();
+                //vlcControl.Play();
+                //Videoplayback();
+                LoadMovie();
             }
         }
         #endregion
@@ -1155,6 +1163,7 @@ namespace KcopsAnalysis
                 return;
             }
             Moveframe(PlayerHelpers.DisPlayFrameNumber - framemovementunit);
+
         }
         #endregion
 
@@ -1347,6 +1356,16 @@ namespace KcopsAnalysis
                     return bitmap;
                 }
             }
+
+        }
+
+        [Obsolete]
+        private void iconButton1_Click(object sender, EventArgs e)
+        {
+
+            vlcControl.Scale(4.0f);
+           // vlcControl.Scale(1.0f);
+
 
         }
     }

@@ -1,6 +1,6 @@
 namespace KcopsAnalysis
 {
-
+    
     internal static class Program
     {
         /// <summary>
@@ -13,7 +13,11 @@ namespace KcopsAnalysis
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Application.Run(new FormMainMenu());
-           // Application.Run(new FrmRealTimeDemo());
+            // Application.Run(new FrmRealTimeDemo());
+
+  
+
+            //Initialize the VlcContext
         }
     }
 }

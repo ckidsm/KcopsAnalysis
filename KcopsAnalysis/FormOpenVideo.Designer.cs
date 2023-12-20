@@ -44,8 +44,8 @@ namespace KcopsAnalysis
             LblFps = new Label();
             lblPlayerTime = new Label();
             groupBox1 = new GroupBox();
-            pictureBox = new PictureBox();
             winChartViewer = new ChartDirector.WinChartViewer();
+            pictureBox = new PictureBox();
             MovieInfo = new GroupBox();
             dataGridView1 = new DataGridView();
             rightLayoutPanel = new TableLayoutPanel();
@@ -53,13 +53,15 @@ namespace KcopsAnalysis
             iconBtnFileOpen = new FontAwesome.Sharp.IconButton();
             iconBtnAnalyze = new FontAwesome.Sharp.IconButton();
             btnRePlay = new FontAwesome.Sharp.IconButton();
+            iconButton1 = new FontAwesome.Sharp.IconButton();
+            iconButton2 = new FontAwesome.Sharp.IconButton();
             LeftMainPanel.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
             groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)winChartViewer).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             MovieInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             rightLayoutPanel.SuspendLayout();
@@ -79,8 +81,8 @@ namespace KcopsAnalysis
             LeftMainPanel.Location = new Point(0, 0);
             LeftMainPanel.Name = "LeftMainPanel";
             LeftMainPanel.RowCount = 6;
-            LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 45.24669F));
-            LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 5.17448854F));
+            LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 44.02367F));
+            LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 6.39053249F));
             LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 6.73886871F));
             LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 36.70635F));
             LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 6.15079355F));
@@ -194,27 +196,31 @@ namespace KcopsAnalysis
             // 
             // tableLayoutPanel2
             // 
-            tableLayoutPanel2.ColumnCount = 3;
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 39.9305573F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60.0694427F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 319F));
+            tableLayoutPanel2.ColumnCount = 5;
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 34.5811043F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65.41889F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 139F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 151F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 106F));
             tableLayoutPanel2.Controls.Add(trackBar1, 1, 0);
             tableLayoutPanel2.Controls.Add(LblFps, 2, 0);
             tableLayoutPanel2.Controls.Add(lblPlayerTime, 0, 0);
+            tableLayoutPanel2.Controls.Add(iconButton1, 3, 0);
+            tableLayoutPanel2.Controls.Add(iconButton2, 4, 0);
             tableLayoutPanel2.Dock = DockStyle.Fill;
-            tableLayoutPanel2.Location = new Point(3, 386);
+            tableLayoutPanel2.Location = new Point(3, 375);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel2.Size = new Size(941, 37);
+            tableLayoutPanel2.Size = new Size(941, 48);
             tableLayoutPanel2.TabIndex = 1;
             // 
             // trackBar1
             // 
             trackBar1.Dock = DockStyle.Fill;
-            trackBar1.Location = new Point(251, 3);
+            trackBar1.Location = new Point(191, 3);
             trackBar1.Name = "trackBar1";
-            trackBar1.Size = new Size(367, 31);
+            trackBar1.Size = new Size(350, 42);
             trackBar1.TabIndex = 2;
             trackBar1.Scroll += trackBar1_Scroll;
             trackBar1.ValueChanged += trackBar1_ValueChanged;
@@ -225,9 +231,9 @@ namespace KcopsAnalysis
             LblFps.Dock = DockStyle.Fill;
             LblFps.Font = new Font("나눔고딕", 15.75F, FontStyle.Bold, GraphicsUnit.Point);
             LblFps.ForeColor = Color.White;
-            LblFps.Location = new Point(624, 0);
+            LblFps.Location = new Point(547, 0);
             LblFps.Name = "LblFps";
-            LblFps.Size = new Size(314, 37);
+            LblFps.Size = new Size(133, 48);
             LblFps.TabIndex = 3;
             LblFps.Text = "프레임 번호 ";
             LblFps.TextAlign = ContentAlignment.MiddleLeft;
@@ -240,7 +246,7 @@ namespace KcopsAnalysis
             lblPlayerTime.ForeColor = Color.White;
             lblPlayerTime.Location = new Point(3, 0);
             lblPlayerTime.Name = "lblPlayerTime";
-            lblPlayerTime.Size = new Size(242, 37);
+            lblPlayerTime.Size = new Size(182, 48);
             lblPlayerTime.TabIndex = 2;
             lblPlayerTime.Text = "00:00:00";
             lblPlayerTime.TextAlign = ContentAlignment.MiddleCenter;
@@ -257,18 +263,6 @@ namespace KcopsAnalysis
             groupBox1.TabStop = false;
             groupBox1.Text = "분석결과";
             // 
-            // pictureBox
-            // 
-            pictureBox.Dock = DockStyle.Fill;
-            pictureBox.Location = new Point(3, 28);
-            pictureBox.Name = "pictureBox";
-            pictureBox.Size = new Size(935, 273);
-            pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox.TabIndex = 1;
-            pictureBox.TabStop = false;
-            pictureBox.Click += pictureBox_Click;
-            pictureBox.DoubleClick += pictureBox_DoubleClick;
-            // 
             // winChartViewer
             // 
             winChartViewer.Dock = DockStyle.Fill;
@@ -280,6 +274,18 @@ namespace KcopsAnalysis
             winChartViewer.Visible = false;
             winChartViewer.Click += winChartViewer_Click;
             winChartViewer.DoubleClick += winChartViewer_DoubleClick;
+            // 
+            // pictureBox
+            // 
+            pictureBox.Dock = DockStyle.Fill;
+            pictureBox.Location = new Point(3, 28);
+            pictureBox.Name = "pictureBox";
+            pictureBox.Size = new Size(935, 273);
+            pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox.TabIndex = 1;
+            pictureBox.TabStop = false;
+            pictureBox.Click += pictureBox_Click;
+            pictureBox.DoubleClick += pictureBox_DoubleClick;
             // 
             // MovieInfo
             // 
@@ -409,6 +415,40 @@ namespace KcopsAnalysis
             btnRePlay.UseVisualStyleBackColor = false;
             btnRePlay.Click += btnRePlay_Click;
             // 
+            // iconButton1
+            // 
+            iconButton1.AutoSize = true;
+            iconButton1.BackColor = Color.FromArgb(21, 101, 192);
+            iconButton1.Dock = DockStyle.Fill;
+            iconButton1.FlatStyle = FlatStyle.Flat;
+            iconButton1.ForeColor = SystemColors.ButtonFace;
+            iconButton1.IconChar = FontAwesome.Sharp.IconChar.PlusCircle;
+            iconButton1.IconColor = Color.Gainsboro;
+            iconButton1.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            iconButton1.IconSize = 32;
+            iconButton1.ImageAlign = ContentAlignment.MiddleLeft;
+            iconButton1.Location = new Point(686, 3);
+            iconButton1.Name = "iconButton1";
+            iconButton1.Size = new Size(145, 42);
+            iconButton1.TabIndex = 4;
+            iconButton1.Text = "화면 확대";
+            iconButton1.TextAlign = ContentAlignment.MiddleRight;
+            iconButton1.UseVisualStyleBackColor = false;
+            iconButton1.Click += iconButton1_Click;
+            // 
+            // iconButton2
+            // 
+            iconButton2.Dock = DockStyle.Fill;
+            iconButton2.IconChar = FontAwesome.Sharp.IconChar.None;
+            iconButton2.IconColor = Color.Black;
+            iconButton2.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            iconButton2.Location = new Point(837, 3);
+            iconButton2.Name = "iconButton2";
+            iconButton2.Size = new Size(101, 42);
+            iconButton2.TabIndex = 5;
+            iconButton2.Text = "화면축소";
+            iconButton2.UseVisualStyleBackColor = true;
+            // 
             // FormOpenVideo
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -427,8 +467,8 @@ namespace KcopsAnalysis
             tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
             groupBox1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)winChartViewer).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
             MovieInfo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             rightLayoutPanel.ResumeLayout(false);
@@ -459,5 +499,7 @@ namespace KcopsAnalysis
         private FontAwesome.Sharp.IconButton BtnExit;
         private ChartDirector.WinChartViewer winChartViewer;
         private PictureBox pictureBox;
+        private FontAwesome.Sharp.IconButton iconButton1;
+        private FontAwesome.Sharp.IconButton iconButton2;
     }
 }
