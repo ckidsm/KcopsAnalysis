@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Reflection;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Microsoft.VisualBasic;
 
 //Chart.setLicenseCode("RDST-352K-3KBY-6HVZ-B975-7DFD");
 namespace KcopsAnalysis
@@ -655,6 +656,8 @@ namespace KcopsAnalysis
                 TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} vlcControl.IsPlaying 상태 : {vlcControl.IsPlaying} :: 아웃풋 영상 파일명 지정 :{outputinfo.OutputFileName} :: 아웃풋 영상 경로 지정 {outputinfo.OutputFilePath} ");
                 outputinfo.OutputText = AlgorithmDirectory + @"\SaveLog" + @"\" + ExtensionRemoveName + "_Accident.txt";
                 outputinfo.OutputImage = AlgorithmDirectory + @"\SaveFig" + @"\" + ExtensionRemoveName + "_Abnormal_Probability.png";
+                outputinfo.OutputCsv = AlgorithmDirectory + @"\SaveLog" + @"\" + ExtensionRemoveName + "_Accident.csv";
+
                 TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} :: 충격 수치 파일명 및  경로 {outputinfo.OutputImage} ");
 
                 if (File.Exists(outputinfo.OutputFilePath))
@@ -668,9 +671,9 @@ namespace KcopsAnalysis
                     TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} :: 충격 수치 파일 삭제 {outputinfo.OutputFilePath} ");
                 }
 
-                if (File.Exists(outputinfo.OutputText))
+                if (File.Exists(outputinfo.OutputCsv))
                 {
-                    File.Delete(outputinfo.OutputText);
+                    File.Delete(outputinfo.OutputCsv);
                     TextWriter.LoggingToFile(GetType().Name, $"영상 분석 클릭 :: isRunning 상태: {isRunning} :: 충격 수치 파일 삭제 {outputinfo.OutputText} ");
                 }
 
@@ -770,7 +773,8 @@ namespace KcopsAnalysis
         {
 
             Psi.FileName = Process_name_Cmd;
-            Psi.WorkingDirectory = @"C:\HitRun\Demo";// @"C:\Demo_0731";// "C:\\";
+           // Psi.WorkingDirectory = @"C:\HitRun\Demo";// @"C:\Demo_0731";// "C:\\";
+            Psi.WorkingDirectory = @"C:\HitRun_1205";// @"C:\Demo_0731";// "C:\\";
             //Psi.CreateNoWindow = false;
 
             Proc.StartInfo = Psi;
@@ -803,19 +807,22 @@ namespace KcopsAnalysis
                 string PassedValue = string.Empty;
                 // 20230901 TODO  충격량 0,실제 충격량 값,0
                 // 동영상 재생 시작시간 0. 감지한 시간, 끝 시간
-
+                DataTable CsvDt = new DataTable();
                 // string AlgorithmArgumentsMode2 = "python demo_hit_n_run_tracking.py evaluate --video " + sourceInfo.FileFullName + " --mode 2 --conf_files .\\X_Decoder\\configs\\xdecoder\\svlp_focalt_lang.yaml --overrides WEIGHT .\\X_Decoder\\weight\\xdecoder_focalt_best_openseg.pt";
-                // string AlgorithmArgumentsModeNew = "python optical_demo.py --video " + sourceInfo.FileFullName +" --mode 0";
-                string AlgorithmArgumentsModeNew = "python optical_demo.py --video " + sourceInfo.FileFullName;
+                 string AlgorithmArgumentsModeNew = " optical_demo.py --video " + sourceInfo.FileFullName +" --mode 0";
+                // string AlgorithmArgumentsModeNew = "python optical_demo.py --video " + sourceInfo.FileFullName;
+
+                StstusPrint($"명령어/영상 경로/스위치 {AlgorithmArgumentsModeNew}");
 
                 Proc.StandardInput.Write(AlgorithmArgumentsModeNew + Environment.NewLine);
 
                 Proc.StandardInput.Flush();
-
+                Application.DoEvents();
                 StstusPrint($" 명령어 전송 :: => {AlgorithmArgumentsModeNew}");
+              
 
                 stopwatch.Start();
-                while (!File.Exists(outputinfo.OutputText))
+                while (!File.Exists(outputinfo.OutputCsv))
                 {
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     StstusPrint($"충격 시간/구간 추출 대기중... 경과 시간: {stopwatch.Elapsed}");
@@ -831,11 +838,49 @@ namespace KcopsAnalysis
                 }
 
 
-                if (File.Exists(outputinfo.OutputText))
+                // 여기서 부터 다시 시작  CSV 파일 읽어오기
+
+                // set datable rank
+                //datatble rank = 0
+              
+                //datatble rank +1  
+              
+
+                 // 20210901 TODO  충격량 0,실제 충격량 값,0 
+                 if (File.Exists(outputinfo.OutputCsv))
+                {
+                    VideoAnalysisResults videoAnalysisResults = new VideoAnalysisResults();
+                    CsvDt = videoAnalysisResults.GetCsvDataTable(outputinfo.OutputCsv);
+
+                }
+
+                var rankedRows = CsvDt.AsEnumerable()
+                  .Select(row => new
+                  {
+                      FrameNumber = row.Field<int>("FrameNumber"),
+                      CrashValue = row.Field<double>("CrashValue"),
+                      Time = row.Field<DateAndTime>("Time") // Converting double to int
+                  })
+                  .OrderByDescending(row => row.CrashValue)
+                  .Select((row, index) => new
+                  {
+                      ID = row.FrameNumber,
+                      Name = row.CrashValue,
+                      Score = row.Time,
+                      Rank = index + 1
+                  });
+
+                // Display the results
+                foreach (var row in rankedRows)
+                {
+                    Console.WriteLine($"ID: {row.ID}, Name: {row.Name}, Score: {row.Score}, Rank: {row.Rank}");
+                }
+
+                if (File.Exists(outputinfo.OutputCsv))
                 {
                     // FileInfo fi = new FileInfo(outputinfo.OutputImage);
 
-                    TextWriter.LoggingToFile(GetType().Name, $"ProcessStartAsync : 충격 수치 파일 생성 됨 ?!  : {outputinfo.OutputText}");
+                    TextWriter.LoggingToFile(GetType().Name, $"ProcessStartAsync : 충격 수치 파일 생성 됨 ?!  : {outputinfo.OutputCsv}");
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     stopwatch.Stop(); //시간측정 끝
 
@@ -918,7 +963,7 @@ namespace KcopsAnalysis
                     //        pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
                     //        Application.DoEvents();
 
-                    //        AnalysisFigures = true;
+                    //        AnalysisFigures = true; ]
                     //    }
                     //}
 

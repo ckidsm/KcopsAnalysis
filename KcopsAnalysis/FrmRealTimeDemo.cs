@@ -109,6 +109,7 @@ namespace KcopsAnalysis
             valueB.Text = dataSeriesB[currentIndex - 1].ToString(".##");
             valueC.Text = dataSeriesC[currentIndex - 1].ToString(".##");
         }
+        
 
         //
         // Utility to shift a double value into an array

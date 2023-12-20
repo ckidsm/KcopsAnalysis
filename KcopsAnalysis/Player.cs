@@ -51,7 +51,6 @@ namespace KcopsAnalysis
         
         public static long VideoEndLength;
 
-
         public static ProcessStartInfo startInfo = new ProcessStartInfo(AppDomain.CurrentDomain.BaseDirectory + "\\ffmpeg.exe");
         public static ProcessStartInfo startInfo2 = new ProcessStartInfo(AppDomain.CurrentDomain.BaseDirectory + "\\ffprobe.exe");
         public static ProcessStartInfo startInfo3 = new ProcessStartInfo(AppDomain.CurrentDomain.BaseDirectory + "\\ffprobe.exe");

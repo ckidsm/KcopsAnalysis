@@ -14,10 +14,7 @@ namespace KcopsAnalysis
         public string FileFullName { get; set; }
         public string FilePath { get; set; }
         public int FileSize { get; set; }
-
         public string FileContent { get; set; }
-
-
         public DateTime CreationTime { get; set; }
         public DateTime LastWriteTime { get; set; }
 

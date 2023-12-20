@@ -24,7 +24,7 @@ namespace KcopsAnalysis
             this.DoubleBuffered = true;
             this.MaximizedBounds = Screen.FromHandle(this.Handle).WorkingArea;
             StartDebugging()
-;
+;          this.AutoScaleMode= AutoScaleMode.Inherit;
         }
 
         private struct RGBColors
