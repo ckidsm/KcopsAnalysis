@@ -18,6 +18,7 @@ namespace KcopsAnalysis
         private int borderSize = 2;
 
         //Properties
+
         public Color PrimaryColor
         {
             get { return primaryColor; }

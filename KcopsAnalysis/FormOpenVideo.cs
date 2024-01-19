@@ -8,7 +8,10 @@ using System.Reflection;
 using System.Text;
 using Vlc.DotNet.Core;
 using Vlc.DotNet.Forms;
+using Vlc.DotNet.Core.Interops;
 using WMPLib;
+using Vlc.DotNet.Core.Interops.Signatures;
+using System.Windows.Forms;
 
 //Chart.setLicenseCode("RDST-352K-3KBY-6HVZ-B975-7DFD");
 namespace KcopsAnalysis
@@ -64,11 +67,18 @@ namespace KcopsAnalysis
         //프레임 이동단위
         private int framemovementunit = 1;
 
+        //영상 확대 크기
+        private float currentScale = 1.0f;
+
+
         public WindowsMediaPlayer MediaPlayer { get; private set; }
         private string SoundPath;
 
         public FormOpenVideo()
         {
+
+
+
             //파이썬 강제 종료
             ProcessRun.ProcessFindAndKill("python");
 
@@ -98,6 +108,9 @@ namespace KcopsAnalysis
 
                 SoundPath = Path.GetFullPath(Path.Combine(apppath, "sound"));
                 // var rootpath1 = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+
+
+
             }
             catch (Exception ex)
             {
@@ -168,32 +181,48 @@ namespace KcopsAnalysis
             //https://github.com/ZeBobo5/Vlc.DotNet/wiki/Getting-started#vlcdotnetforms  여기에 기재된 방법을 사용.
             //string libvlc = "C:\\SRC\\SynologyDrive\\62.Kcops\\WinForm\\KcopsAnalysis\\KcopsAnalysis\\bin\\Debug\\net7.0-windows\\";
             //string path = Directory.GetCurrentDirectory();
+            //--input-repeat=2 반복재생
             vlcControl = new Vlc.DotNet.Forms.VlcControl();
             vlcControl.BeginInit();
             libDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "libvlc", IntPtr.Size == 4 ? "x86" : "win-x64"));
             vlcControl.VlcLibDirectory = libDirectory;
-            vlcControl.VlcMediaplayerOptions = new string[] { "--subsdec-encoding=cp949", "--freetype-font=Malgun Gothic" };
-            vlcControl.Scale(2f);
-            
+            vlcControl.VlcMediaplayerOptions = new string[] { "--subsdec-encoding=cp949", "--freetype-font=Malgun Gothic", " --video-title-show", " --f", " -vvv", "--aspect-ratio=16:9","--no-xlib","--no-osd", "--no-snapshot-preview", "--input-repeat=2" };
+            vlcControl.VlcLibDirectoryNeeded += OnVlcControlNeedsLibDirectory;
+            vlcControl.Height = 500;
+            vlcControl.Width = 500;
             vlcControl.EndInit();
-            vlcControl.Dock = DockStyle.Fill;
-            //테이블 패널 ADD
-            LeftMainPanel.Controls.Add(vlcControl);
-
             vlcControl.VlcMediaPlayer.TimeChanged += VlcMediaPlayer_TimeChanged;
             vlcControl.VlcMediaPlayer.Playing += vlcControl1_Playing;
             vlcControl.VlcMediaPlayer.EndReached += VlcMediaPlayer_EndReached;
+           
             vlcControl.PositionChanged += vlcControl_PositionChanged;
+            vlcControl.Video.AspectRatio = "16:9";
+            vlcControl.Video.Adjustments.Enabled = true;
+            vlcControl.Dock = DockStyle.Fill;
+            //테이블 패널 ADD
+            LeftMainPanel.Controls.Add(vlcControl, 0, 0);
 
+           
+
+
+            //  vlcControl.Video.AspectRatio = "16:9";
             trackBar1.Maximum = 100;
             trackBar1.Minimum = 0;
             trackBar1.Value = 0;
 
         }
 
+        private void OnVlcControlNeedsLibDirectory(object sender, VlcLibDirectoryNeededEventArgs e)
+        {
+            //var vlcPath = @"C:\Program Files\VideoLAN\VLC"; // Provide your VLC path here
+            e.VlcLibDirectory = new System.IO.DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "libvlc", IntPtr.Size == 4 ? "x86" : "win-x64"));
+        }
+
         private void VlcMediaPlayer_EndReached(object sender, VlcMediaPlayerEndReachedEventArgs e)
         {
 
+            vlcControl.Play();
+            
         }
         #region  VlcMediaPlayer 재생 시간 표시
 
@@ -239,8 +268,11 @@ namespace KcopsAnalysis
         private void vlcControl1_Playing(object sender, Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs e)
         {
 
+            //SetMedia()를 호출하기 전에 이 VlcMediaPlayerOptions를 설정하십시오!
+
             Invoke(new Action(() =>
             {
+                // if
 
                 // lblPlayerTime.Text = vlcControl.VlcMediaPlayer.Video.
                 // lblPlayerTime.Text = DateTimeFormat((int) vlcControl.i)
@@ -264,24 +296,28 @@ namespace KcopsAnalysis
                 if (sourceInfo.FileFullName is not null)
                 {
 
-                    FileInfo file = new(sourceInfo.FileFullName);
+                    //FileInfo file = new(sourceInfo.FileFullName);
 
                     FfprobeFrameValue();
 
                     isRunning = true;
 
-
                     Videoplayback();
 
-                    vlcControl.Invalidate();
+                    //// vlcControl.Invalidate();
+                    //vlcControl.Video.AspectRatio = "16:9";
+                    //string[] Options = new string[] {"-f"};
+                    //vlcControl.SetMedia(file);
+                    vlcControl.SetMedia(new Uri(sourceInfo.FileFullName));
 
-                    vlcControl.Play(file);
+                    vlcControl.Play();
+                    
 
                     trackBar1.Maximum = (int)vlcControl.Length;
 
                     Playertimer.Start();
 
-                    TextWriter.LoggingToFile(GetType().Name, $"동영상 로드 (LoadMovie) |  영상 전체 길이 {vlcControl.Length}  | 위치: {file}");
+                    TextWriter.LoggingToFile(GetType().Name, $"동영상 로드 (LoadMovie) |  영상 전체 길이 {vlcControl.Length}  | 위치: {sourceInfo.FileFullName}");
                 }
             }
             catch (Exception ex)
@@ -644,7 +680,7 @@ namespace KcopsAnalysis
                 // 영상이 재생중이면 재생 중지.
                 if (vlcControl.IsPlaying)
                     vlcControl.Stop();// Probably unnecessary
-                //타이머 중지
+                                      //타이머 중지
                 Playertimer.Stop();
 
                 //파이썬 강제 종료
@@ -781,7 +817,7 @@ namespace KcopsAnalysis
 
             Psi.FileName = Process_name_Cmd;
             Psi.WorkingDirectory = @"C:\HitRun\code_1205";// @"C:\Demo_0731";// "C:\\";
-            //Psi.CreateNoWindow = false;
+                                                          //Psi.CreateNoWindow = false;
 
             Proc.StartInfo = Psi;
             Proc.Start();
@@ -1264,7 +1300,6 @@ namespace KcopsAnalysis
 
                     isRunning = true;
 
-
                     Videoplayback();
 
                     vlcControl.Invalidate();
@@ -1274,7 +1309,6 @@ namespace KcopsAnalysis
                     trackBar1.Maximum = (int)vlcControl.Length;
 
                     Playertimer.Start();
-
 
                     vlcControl.Play();
                     vlcControl.Time = ChkTimeValue;
@@ -1359,15 +1393,103 @@ namespace KcopsAnalysis
 
         }
 
-        [Obsolete]
+
         private void iconButton1_Click(object sender, EventArgs e)
         {
+            try
+            {
+                ZoomIn();
 
-            vlcControl.Scale(4.0f);
-           // vlcControl.Scale(1.0f);
+
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+
 
 
         }
+        private void ZoomIn()
+        {
+            currentScale += 0.1f;
+            vlcControl.Scale(currentScale);
+        }
+
+        private void ZoomOut()
+        {
+            currentScale -= 0.1f;
+            vlcControl.Scale(currentScale);
+        }
+
+   
+
+        private void ButtonZoomIn_Click(object sender, EventArgs e)
+        {
+            ZoomIn();
+        }
+
+        private void ButtonZoomOut_Click(object sender, EventArgs e)
+        {
+            ZoomOut();
+        }
+
+        private void numericUpDown1_KeyUp(object sender, KeyEventArgs e)
+        {
+            PlaySeepUp();
+
+
+        }
+        // 동영상 재생 속도 지정
+        private void SetPlaybackSpeed(double speed)
+        {
+            // Set the playback rate
+            vlcControl.Rate = (float)speed;
+        }
+
+        private void numericUpDown1_MouseUp(object sender, MouseEventArgs e)
+        {
+            PlaySeepUp();
+        }
+
+        private void PlaySeepUp()
+        {
+            var numervalue = numericUpDown1.Value;
+            // SetPlaybackSpeed(_mediaPlayer.Rate + 0.1);
+            if (numervalue > 0)
+            {
+                SetPlaybackSpeed(Convert.ToDouble(numervalue));
+            }
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void PlaySeepDown()
+        {
+            //float floatValue1 = (float)numericUpDown1.Value;
+
+            var numericValue = Math.Abs(numericUpDown1.Value);
+            //var numervalue = Convert.to(numericUpDown1.Value / 10);
+            SetPlaybackSpeed(Convert.ToDouble(numericValue / 5));
+
+        }
+
+        private void numericUpDown1_KeyDown(object sender, KeyEventArgs e)
+        {
+            PlaySeepDown();
+        }
+
+        private void numericUpDown1_MouseDown(object sender, MouseEventArgs e)
+        {
+            PlaySeepDown();
+        }
+
+        private void numericUpDown1_ValueChanged_1(object sender, EventArgs e)
+        {
+
+        }
     }
+
+
 
 }
