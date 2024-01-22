@@ -32,22 +32,22 @@ namespace KcopsAnalysis
         {
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             LeftMainPanel = new TableLayoutPanel();
+            progressBar1 = new ProgressBar();
             lblStstus = new Label();
             tableLayoutPanel2 = new TableLayoutPanel();
-            ButtonZoomIn = new FontAwesome.Sharp.IconButton();
-            trackBar1 = new TrackBar();
             LblFps = new Label();
+            trackBar1 = new TrackBar();
             lblPlayerTime = new Label();
+            ButtonZoomIn = new FontAwesome.Sharp.IconButton();
+            MovieSpeedNumlabel = new Label();
+            MovieSpeedNum = new NumericUpDown();
             ButtonZoomOut = new FontAwesome.Sharp.IconButton();
-            numericUpDown1 = new NumericUpDown();
-            label1 = new Label();
             tableLayoutPanel3 = new TableLayoutPanel();
             ButtonPlaying = new FontAwesome.Sharp.IconButton();
             BtnForward = new FontAwesome.Sharp.IconButton();
             BtnCapture = new FontAwesome.Sharp.IconButton();
             BtnBackward = new FontAwesome.Sharp.IconButton();
             groupBox1 = new GroupBox();
-            progressBar1 = new ProgressBar();
             winChartViewer = new ChartDirector.WinChartViewer();
             pictureBox = new PictureBox();
             MovieInfo = new GroupBox();
@@ -60,7 +60,7 @@ namespace KcopsAnalysis
             LeftMainPanel.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MovieSpeedNum).BeginInit();
             tableLayoutPanel3.SuspendLayout();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)winChartViewer).BeginInit();
@@ -75,6 +75,7 @@ namespace KcopsAnalysis
             LeftMainPanel.AutoSize = true;
             LeftMainPanel.ColumnCount = 1;
             LeftMainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            LeftMainPanel.Controls.Add(progressBar1, 0, 4);
             LeftMainPanel.Controls.Add(lblStstus, 0, 4);
             LeftMainPanel.Controls.Add(tableLayoutPanel2, 0, 1);
             LeftMainPanel.Controls.Add(tableLayoutPanel3, 0, 2);
@@ -87,91 +88,78 @@ namespace KcopsAnalysis
             LeftMainPanel.RowStyles.Add(new RowStyle());
             LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 10.1754389F));
             LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 8.636364F));
-            LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 68.97727F));
-            LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 12.1529493F));
+            LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 77.76442F));
+            LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 3.48557687F));
             LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             LeftMainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            LeftMainPanel.Size = new Size(1054, 938);
+            LeftMainPanel.Size = new Size(1054, 853);
             LeftMainPanel.TabIndex = 0;
+            // 
+            // progressBar1
+            // 
+            progressBar1.Location = new Point(3, 805);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(100, 23);
+            progressBar1.TabIndex = 2;
             // 
             // lblStstus
             // 
             lblStstus.Dock = DockStyle.Fill;
             lblStstus.Font = new Font("나눔고딕 ExtraBold", 14.25F, FontStyle.Bold, GraphicsUnit.Point);
-            lblStstus.Location = new Point(3, 823);
+            lblStstus.Location = new Point(3, 831);
             lblStstus.Name = "lblStstus";
-            lblStstus.Size = new Size(1048, 115);
+            lblStstus.Size = new Size(1048, 22);
             lblStstus.TabIndex = 5;
             // 
             // tableLayoutPanel2
             // 
             tableLayoutPanel2.ColumnCount = 7;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25.7287712F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 17.1102657F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 19.64512F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 17.4904938F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 166F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 91F));
-            tableLayoutPanel2.Controls.Add(ButtonZoomIn, 3, 0);
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 31.19159F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18.5747662F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.9392529F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 13.3177567F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 77F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 113F));
+            tableLayoutPanel2.Controls.Add(LblFps, 6, 0);
             tableLayoutPanel2.Controls.Add(trackBar1, 1, 0);
-            tableLayoutPanel2.Controls.Add(LblFps, 2, 0);
             tableLayoutPanel2.Controls.Add(lblPlayerTime, 0, 0);
-            tableLayoutPanel2.Controls.Add(ButtonZoomOut, 4, 0);
-            tableLayoutPanel2.Controls.Add(numericUpDown1, 6, 0);
-            tableLayoutPanel2.Controls.Add(label1, 5, 0);
+            tableLayoutPanel2.Controls.Add(ButtonZoomIn, 2, 0);
+            tableLayoutPanel2.Controls.Add(MovieSpeedNumlabel, 4, 0);
+            tableLayoutPanel2.Controls.Add(MovieSpeedNum, 5, 0);
+            tableLayoutPanel2.Controls.Add(ButtonZoomOut, 3, 0);
             tableLayoutPanel2.Dock = DockStyle.Top;
             tableLayoutPanel2.Location = new Point(3, 3);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 1;
+            tableLayoutPanel2.RowCount = 2;
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.Size = new Size(1048, 75);
             tableLayoutPanel2.TabIndex = 1;
             // 
-            // ButtonZoomIn
+            // LblFps
             // 
-            ButtonZoomIn.BackColor = Color.FromArgb(21, 101, 192);
-            ButtonZoomIn.BackgroundImageLayout = ImageLayout.None;
-            ButtonZoomIn.Dock = DockStyle.Fill;
-            ButtonZoomIn.FlatAppearance.BorderSize = 0;
-            ButtonZoomIn.FlatStyle = FlatStyle.Flat;
-            ButtonZoomIn.ForeColor = Color.White;
-            ButtonZoomIn.IconChar = FontAwesome.Sharp.IconChar.PlusCircle;
-            ButtonZoomIn.IconColor = Color.Gainsboro;
-            ButtonZoomIn.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            ButtonZoomIn.IconSize = 32;
-            ButtonZoomIn.ImageAlign = ContentAlignment.MiddleLeft;
-            ButtonZoomIn.Location = new Point(499, 3);
-            ButtonZoomIn.Name = "ButtonZoomIn";
-            ButtonZoomIn.Size = new Size(149, 69);
-            ButtonZoomIn.TabIndex = 4;
-            ButtonZoomIn.Text = "화면 확대";
-            ButtonZoomIn.UseVisualStyleBackColor = false;
-            ButtonZoomIn.Click += ButtonZoomIn_Click;
+            LblFps.BackColor = Color.FromArgb(21, 101, 192);
+            LblFps.Dock = DockStyle.Fill;
+            LblFps.FlatStyle = FlatStyle.Flat;
+            LblFps.Font = new Font("나눔고딕 ExtraBold", 12F, FontStyle.Bold, GraphicsUnit.Point);
+            LblFps.ForeColor = Color.White;
+            LblFps.Location = new Point(936, 0);
+            LblFps.Name = "LblFps";
+            LblFps.Size = new Size(109, 75);
+            LblFps.TabIndex = 3;
+            LblFps.Text = "Frames Per Second";
+            LblFps.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // trackBar1
             // 
             trackBar1.Dock = DockStyle.Fill;
-            trackBar1.Location = new Point(161, 3);
+            trackBar1.Location = new Point(174, 3);
             trackBar1.Name = "trackBar1";
-            trackBar1.Size = new Size(197, 69);
+            trackBar1.Size = new Size(261, 69);
             trackBar1.TabIndex = 2;
             trackBar1.Scroll += trackBar1_Scroll;
             trackBar1.ValueChanged += trackBar1_ValueChanged;
-            // 
-            // LblFps
-            // 
-            LblFps.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            LblFps.BackColor = Color.FromArgb(21, 101, 192);
-            LblFps.FlatStyle = FlatStyle.Flat;
-            LblFps.Font = new Font("나눔고딕", 15.75F, FontStyle.Bold, GraphicsUnit.Point);
-            LblFps.ForeColor = Color.White;
-            LblFps.Location = new Point(364, 1);
-            LblFps.Name = "LblFps";
-            LblFps.Size = new Size(129, 72);
-            LblFps.TabIndex = 3;
-            LblFps.Text = "프레임 번호 ";
-            LblFps.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // lblPlayerTime
             // 
@@ -181,15 +169,75 @@ namespace KcopsAnalysis
             lblPlayerTime.ForeColor = Color.White;
             lblPlayerTime.Location = new Point(3, 0);
             lblPlayerTime.Name = "lblPlayerTime";
-            lblPlayerTime.Size = new Size(152, 75);
+            lblPlayerTime.Size = new Size(165, 75);
             lblPlayerTime.TabIndex = 2;
             lblPlayerTime.Text = "영상 재생 시간";
             lblPlayerTime.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // ButtonZoomIn
+            // 
+            ButtonZoomIn.BackColor = Color.FromArgb(21, 101, 192);
+            ButtonZoomIn.BackgroundImageLayout = ImageLayout.None;
+            ButtonZoomIn.Dock = DockStyle.Fill;
+            ButtonZoomIn.Enabled = false;
+            ButtonZoomIn.FlatAppearance.BorderSize = 0;
+            ButtonZoomIn.FlatStyle = FlatStyle.Flat;
+            ButtonZoomIn.ForeColor = Color.White;
+            ButtonZoomIn.IconChar = FontAwesome.Sharp.IconChar.PlusCircle;
+            ButtonZoomIn.IconColor = Color.Gainsboro;
+            ButtonZoomIn.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            ButtonZoomIn.IconSize = 32;
+            ButtonZoomIn.ImageAlign = ContentAlignment.MiddleLeft;
+            ButtonZoomIn.Location = new Point(441, 3);
+            ButtonZoomIn.Name = "ButtonZoomIn";
+            ButtonZoomIn.Size = new Size(153, 69);
+            ButtonZoomIn.TabIndex = 4;
+            ButtonZoomIn.Text = "화면 확대";
+            ButtonZoomIn.TextAlign = ContentAlignment.MiddleRight;
+            ButtonZoomIn.UseVisualStyleBackColor = false;
+            ButtonZoomIn.Click += ButtonZoomIn_Click;
+            // 
+            // MovieSpeedNumlabel
+            // 
+            MovieSpeedNumlabel.BackColor = Color.FromArgb(21, 101, 192);
+            MovieSpeedNumlabel.Dock = DockStyle.Fill;
+            MovieSpeedNumlabel.Enabled = false;
+            MovieSpeedNumlabel.Font = new Font("나눔고딕", 15F, FontStyle.Bold, GraphicsUnit.Point);
+            MovieSpeedNumlabel.ForeColor = Color.White;
+            MovieSpeedNumlabel.Location = new Point(745, 0);
+            MovieSpeedNumlabel.Name = "MovieSpeedNumlabel";
+            MovieSpeedNumlabel.Size = new Size(108, 75);
+            MovieSpeedNumlabel.TabIndex = 7;
+            MovieSpeedNumlabel.Text = "재생속도 조절";
+            MovieSpeedNumlabel.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // MovieSpeedNum
+            // 
+            MovieSpeedNum.BackColor = Color.FromArgb(21, 101, 192);
+            MovieSpeedNum.BorderStyle = BorderStyle.None;
+            MovieSpeedNum.Dock = DockStyle.Fill;
+            MovieSpeedNum.Enabled = false;
+            MovieSpeedNum.Font = new Font("나눔고딕 ExtraBold", 17.9999981F, FontStyle.Bold, GraphicsUnit.Point);
+            MovieSpeedNum.ForeColor = Color.White;
+            MovieSpeedNum.Location = new Point(859, 25);
+            MovieSpeedNum.Margin = new Padding(3, 25, 3, 3);
+            MovieSpeedNum.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            MovieSpeedNum.Minimum = new decimal(new int[] { 3, 0, 0, int.MinValue });
+            MovieSpeedNum.Name = "MovieSpeedNum";
+            MovieSpeedNum.Size = new Size(71, 31);
+            MovieSpeedNum.TabIndex = 6;
+            MovieSpeedNum.TextAlign = HorizontalAlignment.Center;
+            MovieSpeedNum.ValueChanged += numericUpDown1_ValueChanged_1;
+            MovieSpeedNum.KeyDown += numericUpDown1_KeyDown;
+            MovieSpeedNum.KeyUp += numericUpDown1_KeyUp;
+            MovieSpeedNum.MouseDown += numericUpDown1_MouseDown;
+            MovieSpeedNum.MouseUp += numericUpDown1_MouseUp;
             // 
             // ButtonZoomOut
             // 
             ButtonZoomOut.BackColor = Color.FromArgb(21, 101, 192);
             ButtonZoomOut.Dock = DockStyle.Fill;
+            ButtonZoomOut.Enabled = false;
             ButtonZoomOut.FlatAppearance.BorderSize = 0;
             ButtonZoomOut.FlatStyle = FlatStyle.Flat;
             ButtonZoomOut.ForeColor = Color.White;
@@ -197,45 +245,15 @@ namespace KcopsAnalysis
             ButtonZoomOut.IconColor = Color.Gainsboro;
             ButtonZoomOut.IconFont = FontAwesome.Sharp.IconFont.Auto;
             ButtonZoomOut.IconSize = 32;
-            ButtonZoomOut.ImageAlign = ContentAlignment.MiddleLeft;
-            ButtonZoomOut.Location = new Point(654, 3);
+            ButtonZoomOut.ImageAlign = ContentAlignment.MiddleRight;
+            ButtonZoomOut.Location = new Point(600, 3);
             ButtonZoomOut.Name = "ButtonZoomOut";
-            ButtonZoomOut.Size = new Size(132, 69);
+            ButtonZoomOut.Size = new Size(139, 69);
             ButtonZoomOut.TabIndex = 5;
             ButtonZoomOut.Text = "화면축소";
+            ButtonZoomOut.TextAlign = ContentAlignment.MiddleLeft;
             ButtonZoomOut.UseVisualStyleBackColor = false;
             ButtonZoomOut.Click += ButtonZoomOut_Click;
-            // 
-            // numericUpDown1
-            // 
-            numericUpDown1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            numericUpDown1.AutoSize = true;
-            numericUpDown1.Font = new Font("나눔고딕 ExtraBold", 17.9999981F, FontStyle.Bold, GraphicsUnit.Point);
-            numericUpDown1.Location = new Point(958, 3);
-            numericUpDown1.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
-            numericUpDown1.Minimum = new decimal(new int[] { 3, 0, 0, int.MinValue });
-            numericUpDown1.Name = "numericUpDown1";
-            numericUpDown1.Size = new Size(87, 35);
-            numericUpDown1.TabIndex = 6;
-            numericUpDown1.TextAlign = HorizontalAlignment.Center;
-            numericUpDown1.ValueChanged += numericUpDown1_ValueChanged_1;
-            numericUpDown1.KeyDown += numericUpDown1_KeyDown;
-            numericUpDown1.KeyUp += numericUpDown1_KeyUp;
-            numericUpDown1.MouseDown += numericUpDown1_MouseDown;
-            numericUpDown1.MouseUp += numericUpDown1_MouseUp;
-            // 
-            // label1
-            // 
-            label1.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            label1.BackColor = Color.FromArgb(21, 101, 192);
-            label1.Font = new Font("나눔고딕", 15.75F, FontStyle.Bold, GraphicsUnit.Point);
-            label1.ForeColor = Color.White;
-            label1.Location = new Point(792, 4);
-            label1.Name = "label1";
-            label1.Size = new Size(160, 66);
-            label1.TabIndex = 7;
-            label1.Text = "재생속도 조절";
-            label1.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // tableLayoutPanel3
             // 
@@ -250,7 +268,7 @@ namespace KcopsAnalysis
             tableLayoutPanel3.Controls.Add(BtnCapture, 3, 0);
             tableLayoutPanel3.Controls.Add(BtnBackward, 0, 0);
             tableLayoutPanel3.Dock = DockStyle.Top;
-            tableLayoutPanel3.Location = new Point(3, 98);
+            tableLayoutPanel3.Location = new Point(3, 87);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 1;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
@@ -331,29 +349,20 @@ namespace KcopsAnalysis
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(progressBar1);
             groupBox1.Controls.Add(winChartViewer);
             groupBox1.Controls.Add(pictureBox);
-            groupBox1.Location = new Point(3, 179);
+            groupBox1.Location = new Point(3, 158);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(941, 187);
+            groupBox1.Size = new Size(1045, 355);
             groupBox1.TabIndex = 2;
             groupBox1.TabStop = false;
             groupBox1.Text = "분석결과";
             // 
-            // progressBar1
-            // 
-            progressBar1.Location = new Point(79, 251);
-            progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(100, 23);
-            progressBar1.TabIndex = 2;
-            // 
             // winChartViewer
             // 
-            winChartViewer.Dock = DockStyle.Fill;
-            winChartViewer.Location = new Point(3, 28);
+            winChartViewer.Location = new Point(133, 113);
             winChartViewer.Name = "winChartViewer";
-            winChartViewer.Size = new Size(935, 156);
+            winChartViewer.Size = new Size(767, 201);
             winChartViewer.TabIndex = 0;
             winChartViewer.TabStop = false;
             winChartViewer.Visible = false;
@@ -363,9 +372,10 @@ namespace KcopsAnalysis
             // pictureBox
             // 
             pictureBox.Dock = DockStyle.Fill;
+            pictureBox.Image = Resources._3028;
             pictureBox.Location = new Point(3, 28);
             pictureBox.Name = "pictureBox";
-            pictureBox.Size = new Size(935, 156);
+            pictureBox.Size = new Size(1039, 324);
             pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox.TabIndex = 1;
             pictureBox.TabStop = false;
@@ -516,7 +526,7 @@ namespace KcopsAnalysis
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MovieSpeedNum).EndInit();
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
             groupBox1.ResumeLayout(false);
@@ -542,7 +552,6 @@ namespace KcopsAnalysis
         private FontAwesome.Sharp.IconButton ButtonPlaying;
         private FontAwesome.Sharp.IconButton BtnBackward;
         private FontAwesome.Sharp.IconButton BtnForward;
-        private FontAwesome.Sharp.IconButton BtnCapture;
         private GroupBox groupBox1;
         private Label lblStstus;
         private TableLayoutPanel rightLayoutPanel;
@@ -554,8 +563,9 @@ namespace KcopsAnalysis
         private PictureBox pictureBox;
         private FontAwesome.Sharp.IconButton ButtonZoomIn;
         private FontAwesome.Sharp.IconButton ButtonZoomOut;
-        private NumericUpDown numericUpDown1;
+        private NumericUpDown MovieSpeedNum;
         private ProgressBar progressBar1;
-        private Label label1;
+        private Label MovieSpeedNumlabel;
+        private FontAwesome.Sharp.IconButton BtnCapture;
     }
 }

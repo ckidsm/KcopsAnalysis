@@ -186,7 +186,7 @@ namespace KcopsAnalysis
             vlcControl.BeginInit();
             libDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "libvlc", IntPtr.Size == 4 ? "x86" : "win-x64"));
             vlcControl.VlcLibDirectory = libDirectory;
-            vlcControl.VlcMediaplayerOptions = new string[] { "--subsdec-encoding=cp949", "--freetype-font=Malgun Gothic", " --video-title-show", " --f", " -vvv", "--aspect-ratio=16:9","--no-xlib","--no-osd", "--no-snapshot-preview", "--input-repeat=2" };
+            vlcControl.VlcMediaplayerOptions = new string[] { "--subsdec-encoding=cp949", "--freetype-font=Malgun Gothic", " --video-title-show", " --f", " -vvv", "--aspect-ratio=16:9", "--no-xlib", "--no-osd", "--no-snapshot-preview", "--input-repeat=2" };
             vlcControl.VlcLibDirectoryNeeded += OnVlcControlNeedsLibDirectory;
             vlcControl.Height = 500;
             vlcControl.Width = 500;
@@ -194,7 +194,7 @@ namespace KcopsAnalysis
             vlcControl.VlcMediaPlayer.TimeChanged += VlcMediaPlayer_TimeChanged;
             vlcControl.VlcMediaPlayer.Playing += vlcControl1_Playing;
             vlcControl.VlcMediaPlayer.EndReached += VlcMediaPlayer_EndReached;
-           
+
             vlcControl.PositionChanged += vlcControl_PositionChanged;
             vlcControl.Video.AspectRatio = "16:9";
             vlcControl.Video.Adjustments.Enabled = true;
@@ -202,7 +202,7 @@ namespace KcopsAnalysis
             //테이블 패널 ADD
             LeftMainPanel.Controls.Add(vlcControl, 0, 0);
 
-           
+
 
 
             //  vlcControl.Video.AspectRatio = "16:9";
@@ -222,7 +222,7 @@ namespace KcopsAnalysis
         {
 
             vlcControl.Play();
-            
+
         }
         #region  VlcMediaPlayer 재생 시간 표시
 
@@ -232,6 +232,7 @@ namespace KcopsAnalysis
             {
                 //vlcControl.Length 영상 전체 시간
                 //e.NewTime 현재 재싱 시간.
+                TimeSpan ts = TimeSpan.FromMilliseconds(e.NewTime);
                 Invoke(new Action(() =>
                 {
                     Player.VideoEndLength = vlcControl.Length;
@@ -311,7 +312,7 @@ namespace KcopsAnalysis
                     vlcControl.SetMedia(new Uri(sourceInfo.FileFullName));
 
                     vlcControl.Play();
-                    
+
 
                     trackBar1.Maximum = (int)vlcControl.Length;
 
@@ -459,7 +460,7 @@ namespace KcopsAnalysis
             currentsecond = (PlayerHelpers.Hour * 3600) + (PlayerHelpers.Minute * 60) + PlayerHelpers.Second;
             frameapproximation = currentsecond / framerate;
             PlayerHelpers.DisPlayFrameNumber = Convert.ToInt32(Math.Truncate(frameapproximation));
-            LblFps.Text = "영상 프레임  : " + PlayerHelpers.DisPlayFrameNumber;
+            LblFps.Text = "Frames Per Second" + Environment.NewLine + PlayerHelpers.DisPlayFrameNumber;
             LblFps.Update();
         }
         #endregion
@@ -658,6 +659,12 @@ namespace KcopsAnalysis
                     DateTime creationTime = File.GetCreationTime(sourceInfo.FileFullName);
                     DateTime lastWriteTime = File.GetLastWriteTime(sourceInfo.FileFullName);
                     TextWriter.LoggingToFile(GetType().Name, $"파일 열기 클릭(영상로드) :: 위치:{sourceInfo.FileFullName}");
+
+                    ButtonZoomIn.Enabled = true;
+                    ButtonZoomOut.Enabled = true;
+                    MovieSpeedNum.Enabled = true;
+                    MovieSpeedNum.Enabled = true;
+                    MovieSpeedNumlabel.Enabled = true;
                     //트랙바 설정
 
                 }
@@ -1138,10 +1145,10 @@ namespace KcopsAnalysis
             Invoke(new Action(() =>
             {
                 vlcControl.Time = trackBar1.Value * 1000;
-                int b = (int)vlcControl.Time / 1000;
-                int d = b / 60;
-                b = b - d * 60;
-                lblPlayerTime.Text = d + ":" + b + "/" + c + ":" + a;
+                //int b = (int)vlcControl.Time / 1000;
+                //int d = b / 60;
+                //b = b - d * 60;
+                //lblPlayerTime.Text = d + ":" + b + "/" + c + ":" + a;
             }));
 
         }
@@ -1419,7 +1426,7 @@ namespace KcopsAnalysis
             vlcControl.Scale(currentScale);
         }
 
-   
+
 
         private void ButtonZoomIn_Click(object sender, EventArgs e)
         {
@@ -1451,7 +1458,7 @@ namespace KcopsAnalysis
 
         private void PlaySeepUp()
         {
-            var numervalue = numericUpDown1.Value;
+            var numervalue = MovieSpeedNum.Value;
             // SetPlaybackSpeed(_mediaPlayer.Rate + 0.1);
             if (numervalue > 0)
             {
@@ -1468,7 +1475,7 @@ namespace KcopsAnalysis
         {
             //float floatValue1 = (float)numericUpDown1.Value;
 
-            var numericValue = Math.Abs(numericUpDown1.Value);
+            var numericValue = Math.Abs(MovieSpeedNum.Value);
             //var numervalue = Convert.to(numericUpDown1.Value / 10);
             SetPlaybackSpeed(Convert.ToDouble(numericValue / 5));
 
