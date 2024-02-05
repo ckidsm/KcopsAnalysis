@@ -60,8 +60,8 @@ namespace KcopsAnalysis
         private bool isError = false;
 
         private bool AnalysisFigures = false;
-        public int a = 0;
-        public int c = 0;
+        public decimal Speedvalue = 0;
+     
         public delegate void UpdateControlsDelegate(); //Execute when video loads
 
         //프레임 이동단위
@@ -273,7 +273,7 @@ namespace KcopsAnalysis
 
             Invoke(new Action(() =>
             {
-                // if
+
 
                 // lblPlayerTime.Text = vlcControl.VlcMediaPlayer.Video.
                 // lblPlayerTime.Text = DateTimeFormat((int) vlcControl.i)
@@ -664,7 +664,7 @@ namespace KcopsAnalysis
                     ButtonZoomOut.Enabled = true;
                     MovieSpeedNum.Enabled = true;
                     MovieSpeedNum.Enabled = true;
-                    MovieSpeedNumlabel.Enabled = true;
+                    // MovieSpeedNumlabel.Enabled = true;
                     //트랙바 설정
 
                 }
@@ -941,12 +941,12 @@ namespace KcopsAnalysis
                     Impactquantity[1] = Double.Parse(outputinfo.GraphReferenceValue[1]); //1.9197
                     Impactquantity[2] = 0;
 
-                    //  picrurebox 비활성화
-                    if (pictureBox.Visible)
-                    {
-                        pictureBox.Image = null; pictureBox.ImageLocation = null;
-                        pictureBox.Visible = false;
-                    }
+                    ////  picrurebox 비활성화
+                    //if (pictureBox.Visible)
+                    //{
+                    //    pictureBox.Image = null; pictureBox.ImageLocation = null;
+                    //    pictureBox.Visible = false;
+                    //}
 
                     //// 차트 그린다.
                     winChartViewer.Visible = true;
@@ -1117,9 +1117,6 @@ namespace KcopsAnalysis
 
         private void btnRePlay_Click(object sender, EventArgs e)
         {
-            //FrmRealTimeDemo frm = new FrmRealTimeDemo();
-            //frm.ShowDialog();
-            // long value = 5.699999999999999;
             long vout = Convert.ToInt64(5.699999999999999);
             if (vlcControl.IsPlaying)
             {
@@ -1363,7 +1360,7 @@ namespace KcopsAnalysis
             //사진 파일 제대로 갱신이 안되서 500 밀리초 대기
             System.Threading.Thread.Sleep(500);
 
-            pictureBox.ImageLocation = AppDomain.CurrentDomain.BaseDirectory + "\\frame_shot.jpg";
+          //  pictureBox.ImageLocation = AppDomain.CurrentDomain.BaseDirectory + "\\frame_shot.jpg";
         }
 
         private void Screenshot()
@@ -1379,8 +1376,8 @@ namespace KcopsAnalysis
 
             if (File.Exists(screenshotfile))
             {
-                pictureBox.Image = null; pictureBox.ImageLocation = null;
-                pictureBox.Image = StringToImage(screenshot + @"\" + sourceInfo.FileName + "frame_shot.jpg");
+                //pictureBox.Image = null; pictureBox.ImageLocation = null;
+                //pictureBox.Image = StringToImage(screenshot + @"\" + sourceInfo.FileName + "frame_shot.jpg");
                 Application.DoEvents();
             }
         }
@@ -1401,27 +1398,27 @@ namespace KcopsAnalysis
         }
 
 
-        private void iconButton1_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                ZoomIn();
 
-
-            }
-            catch (Exception ex) { MessageBox.Show(ex.Message); }
-
-
-
-        }
         private void ZoomIn()
         {
             currentScale += 0.1f;
+            Player.VideoZoomInValue = currentScale;
+            if (Player.VideoZoomInValue > 3)
+            {
+                return;
+            }
             vlcControl.Scale(currentScale);
         }
 
         private void ZoomOut()
         {
+            if (Player.VideoZoomInValue > 1.0f)
+            {
+                currentScale -= Player.VideoZoomOutValue;
+                vlcControl.Scale(currentScale);
+                return;
+            }
+
             currentScale -= 0.1f;
             vlcControl.Scale(currentScale);
         }
@@ -1447,8 +1444,18 @@ namespace KcopsAnalysis
         // 동영상 재생 속도 지정
         private void SetPlaybackSpeed(double speed)
         {
-            // Set the playback rate
-            vlcControl.Rate = (float)speed;
+            try
+            {
+                vlcControl.Rate = (float)speed;
+                Application.DoEvents();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                TextWriter.LoggingToFile(GetType().Name, $"예외 메시지 : {ex.Message} {Environment.NewLine} 위치: {ex.Source}");
+
+            }
+            
         }
 
         private void numericUpDown1_MouseUp(object sender, MouseEventArgs e)
@@ -1470,11 +1477,10 @@ namespace KcopsAnalysis
         {
 
         }
-
+        //동영상 축소시 현재 동영상의 사이즈을 가져와 초기 상태와비교하여 축소시킨다
         private void PlaySeepDown()
         {
-            //float floatValue1 = (float)numericUpDown1.Value;
-
+            
             var numericValue = Math.Abs(MovieSpeedNum.Value);
             //var numervalue = Convert.to(numericUpDown1.Value / 10);
             SetPlaybackSpeed(Convert.ToDouble(numericValue / 5));
@@ -1494,6 +1500,27 @@ namespace KcopsAnalysis
         private void numericUpDown1_ValueChanged_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnSpeedUp_Click(object sender, EventArgs e)
+        {
+            if (Speedvalue >=0)
+            {
+                Speedvalue++;
+                lblPlayerTime.Text = $"재생 속도 증가 [ {Speedvalue} ] ";
+                SetPlaybackSpeed(Convert.ToDouble(Speedvalue));
+               
+            }
+        }
+
+        private void BtnSpeedDown_Click(object sender, EventArgs e)
+        {
+
+            if (Speedvalue > 0)
+            {
+                Speedvalue--;
+                SetPlaybackSpeed(Convert.ToDouble(Speedvalue));
+            }
         }
     }
 

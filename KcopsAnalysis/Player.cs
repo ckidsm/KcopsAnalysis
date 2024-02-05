@@ -50,6 +50,11 @@ namespace KcopsAnalysis
         public static string  CropEndTimeCommand;
         
         public static long VideoEndLength;
+        //영상확대값
+        public static float VideoZoomInValue;
+        //영상축소값
+        public static float VideoZoomOutValue;
+
 
 
         public static ProcessStartInfo startInfo = new ProcessStartInfo(AppDomain.CurrentDomain.BaseDirectory + "\\ffmpeg.exe");
